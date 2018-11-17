@@ -43,7 +43,13 @@ void DirectoryScanner::scan()
     if (iter.fileInfo().fileName().endsWith(".plist")) continue;
     if (iter.fileInfo().fileName().endsWith(".db")) continue;
     if (iter.fileInfo().fileName().endsWith(".html")) continue;
+    if (iter.fileInfo().fileName().endsWith(".htm")) continue;
+    if (iter.fileInfo().fileName().endsWith(".css")) continue;
+    if (iter.fileInfo().fileName().endsWith(".js")) continue;
+    if (iter.fileInfo().fileName().endsWith(".orig")) continue;
+    if (iter.fileInfo().fileName().endsWith(".bak")) continue;
     if (iter.fileInfo().fileName().startsWith("_")) continue;
+    if (iter.fileInfo().fileName().startsWith(".")) continue;
 
     const auto bytes = QImageReader::imageFormat(path);
     if (!bytes.isEmpty())

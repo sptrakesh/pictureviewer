@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   ui->label->setBackgroundRole(QPalette::Base);
 
-  timer.setInterval(5000);
+  timer.setInterval(ui->intervalSlider->value() * 1000);
   connect(&timer, &QTimer::timeout, this, &MainWindow::showImage);
 }
 
@@ -67,6 +67,7 @@ void MainWindow::dropEvent(QDropEvent* event)
     const QFileInfo file{fileName};
     if (file.isDir())
     {
+      ui->actionStop_Scanning->setEnabled(true);
       auto scanner = new DirectoryScanner(file.absoluteFilePath());
       auto thread = new QThread;
       scanner->moveToThread(thread);
@@ -77,7 +78,7 @@ void MainWindow::dropEvent(QDropEvent* event)
       connect(scanner, &DirectoryScanner::finished, this, &MainWindow::scanFinished);
       threads.append(thread);
       thread->start();
-      if (thread->isRunning()) emit scan();
+      emit scan();
       play();
     }
     else if (file.isFile())
@@ -103,7 +104,19 @@ void MainWindow::stopScanning()
 
 void MainWindow::play()
 {
-  timer.start();
+  if (playing) timer.stop();
+  else timer.start();
+  playing = !playing;
+}
+
+void MainWindow::setIndex(int index)
+{
+  files.setIndex(index);
+}
+
+void MainWindow::setInterval(int interval)
+{
+  timer.setInterval(interval * 1000);
 }
 
 void MainWindow::removeFile()
@@ -118,12 +131,26 @@ void MainWindow::aboutQt()
 void MainWindow::addFile(const QString file)
 {
   files.add(file);
-  //QCoreApplication::processEvents();
+
+  if (files.currentIndex() < 0)
+  {
+    showImage();
+    QCoreApplication::processEvents();
+    return;
+  }
+
+  if (!(files.count() % 10))
+  {
+    ui->indexSlider->setMaximum(files.count());
+    QCoreApplication::processEvents();
+  }
 }
 
 void MainWindow::scanFinished(const QString directory, int count)
 {
   ui->actionStop_Scanning->setDisabled(true);
+  ui->indexSlider->setMaximum(files.count());
+  QCoreApplication::processEvents();
   qInfo(MAIN_WINDOW) << "Finished scanning " << count <<
     " image files in " << directory << " directory tree." ;
 }
@@ -147,23 +174,12 @@ void MainWindow::showImage()
   }
 
   auto pixmap = QPixmap::fromImage(image);
-  const auto w = width();
-  const auto h = height();
-
-  if (pixmap.height() < h)
-  {
-    pixmap = pixmap.scaledToHeight(h, Qt::SmoothTransformation);
-  }
-  if (pixmap.width() < w)
-  {
-    pixmap = pixmap.scaledToHeight(w, Qt::SmoothTransformation);
-  }
-
+  pixmap = pixmap.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
   ui->label->setPixmap(pixmap);
-  //setFixedSize(w, h);
   setWindowFilePath(file);
   ui->statusbar->showMessage(
     QString( "%1 (%2/%3)" ).arg( file ).
       arg( files.currentIndex() + 1 ).
       arg( files.count() ) );
+  ui->indexSlider->setValue(files.currentIndex());
 }

@@ -24,6 +24,8 @@ namespace com::sptci
     void openDirectory();
     void stopScanning();
     void play();
+    void setIndex(int index);
+    void setInterval(int interval);
     void removeFile();
     void aboutQt();
 
@@ -42,11 +44,12 @@ namespace com::sptci
     void showImage();
 
   private:
-    double scaleFactor = 1;
-    Ui::MainWindow* ui;
-    QList<QThread*> threads;
     QTimer timer;
     FileList files;
+    QList<QThread*> threads;
+    Ui::MainWindow* ui;
+    double scaleFactor = 1;
+    bool playing = false;
   };
 }
 

@@ -16,6 +16,8 @@ namespace com::sptci
 
     bool isEmpty() const { return files.isEmpty(); }
     int currentIndex() const { return index; }
+    void setIndex(int index);
+
     const QString& at(int index);
     const QString& first();
     const QString& next();
@@ -25,7 +27,7 @@ namespace com::sptci
     void clear() { files.clear(); }
 
   private:
-    int index = 0;
+    int index = -1;
     QList<QString> files;
   };
 }

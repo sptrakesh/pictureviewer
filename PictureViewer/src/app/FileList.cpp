@@ -9,6 +9,12 @@ void FileList::add(const QString& file)
   files.append(file);
 }
 
+void FileList::setIndex(int index)
+{
+  if (index >= files.count()) return;
+  this->index = index;
+}
+
 const QString& FileList::at(int index)
 {
   this->index = index;

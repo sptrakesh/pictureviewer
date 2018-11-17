@@ -41,3 +41,5 @@ SOURCES += \
 FORMS    += \
     src/app/InfoViewer.ui \
     src/app/MainWindow.ui
+
+RESOURCES += resources/resources.qrc
