@@ -9,14 +9,15 @@
 #include <QtGui/QDropEvent>
 #include <QtGui/QImageReader>
 
+#include <algorithm>
+#include <iterator>
+
 using com::sptci::MainWindow;
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent), ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  //ui->scrollArea->setBackgroundRole(QPalette::Dark);
-  //ui->scrollArea->setWidgetResizable(true);
   ui->label->setBackgroundRole(QPalette::Base);
 
   timer.setInterval(5000);
@@ -25,18 +26,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+  using std::begin;
+  using std::end;
+
+  timer.stop();
   delete ui;
-  for (auto* thread : threads)
-  {
+
+  std::for_each(begin(threads), end(threads), [](decltype(*begin(threads)) thread) {
     thread->quit();
     thread->wait();
     thread->deleteLater();
-  }
+  });
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
   if (event->mimeData()->hasUrls()) event->acceptProposedAction();
+  else qWarning() << "Ignoring drop for non-url type";
 }
 
 void MainWindow::dropEvent(QDropEvent* event)
@@ -63,8 +69,13 @@ void MainWindow::dropEvent(QDropEvent* event)
       if (thread->isRunning()) emit scan();
       play();
     }
+    else if (file.isFile())
+    {
+      files.add(file.absoluteFilePath());
+    }
     else
     {
+      qWarning() << "Unsupported file type:" << file.absoluteFilePath();
     }
   }
 }
@@ -102,6 +113,29 @@ void MainWindow::addFile(const QString file)
 
 void MainWindow::showImage()
 {
+  auto scaleDown = [this](const QPixmap& pixmap) -> QPixmap {
+    QPixmap pm = pixmap;
+    if (pixmap.width() > width())
+    {
+      qDebug() << "Scaling pixmap width down from " << pixmap.width() << " to " << width();
+      pm = pixmap.scaledToWidth(width());
+    }
+
+    return pm;
+  };
+
+  auto scaleUp = [this](const QPixmap& pixmap) -> QPixmap
+  {
+    QPixmap pm = pixmap;
+    if (pixmap.height() < height())
+    {
+      qDebug() << "Scaling pixmap height up from " << pixmap.height() << " to " << height();
+      pm = pixmap.scaledToHeight(height());
+    }
+
+    return pm;
+  };
+
   if (files.isEmpty()) return;
   const auto& file = files.next();
 
@@ -116,16 +150,20 @@ void MainWindow::showImage()
   }
 
   auto pixmap = QPixmap::fromImage(image);
-  if (pixmap.width() > pixmap.height() && pixmap.width() != this->width())
-  {
-    pixmap = pixmap.scaledToWidth(this->width());
-  }
-  else if (pixmap.height() > pixmap.width() && pixmap.height() != this->height())
-  {
-    pixmap = pixmap.scaledToHeight(this->height());
-  }
+  const auto w = width();
+  const auto h = height();
+  qDebug() << "Pixmap: " << pixmap.width() << "x" << pixmap.height() <<
+      "; window: " << width() << "x" << height();
+
+  pixmap = scaleUp(pixmap);
+  pixmap = scaleDown(pixmap);
+
+  qDebug() << "Resized pixmap: " << pixmap.width() << "x" << pixmap.height() <<
+      "; window: " << width() << "x" << height();
 
   ui->label->setPixmap(pixmap);
+  setFixedSize(w, h);
+  setWindowFilePath(file);
   ui->statusbar->showMessage(
     QString( "%1 (%2/%3)" ).arg( file ).
       arg( files.currentIndex() + 1 ).
