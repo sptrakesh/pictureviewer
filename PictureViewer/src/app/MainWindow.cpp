@@ -3,6 +3,7 @@
 #include "DirectoryScanner.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QMimeData>
 #include <QtCore/QFileInfo>
 #include <QtGui/QDragEnterEvent>
@@ -13,6 +14,8 @@
 #include <iterator>
 
 using com::sptci::MainWindow;
+
+Q_LOGGING_CATEGORY( MAIN_WINDOW, "com.sptci.MainWindow" )
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent), ui(new Ui::MainWindow)
@@ -30,19 +33,26 @@ MainWindow::~MainWindow()
   using std::end;
 
   timer.stop();
-  delete ui;
 
   std::for_each(begin(threads), end(threads), [](decltype(*begin(threads)) thread) {
     thread->quit();
-    thread->wait();
+    thread->wait(3000);
     thread->deleteLater();
   });
+
+  delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+  stopScanning();
+  QMainWindow::closeEvent(event);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 {
   if (event->mimeData()->hasUrls()) event->acceptProposedAction();
-  else qWarning() << "Ignoring drop for non-url type";
+  else qWarning(MAIN_WINDOW) << "Ignoring drop for non-url type";
 }
 
 void MainWindow::dropEvent(QDropEvent* event)
@@ -52,7 +62,7 @@ void MainWindow::dropEvent(QDropEvent* event)
   for (const auto& url : event->mimeData()->urls())
   {
     const auto fileName = url.toLocalFile();
-    qDebug() << "Dropped file:" << fileName;
+    qInfo(MAIN_WINDOW) << "Dropped file:" << fileName;
 
     const QFileInfo file{fileName};
     if (file.isDir())
@@ -64,6 +74,7 @@ void MainWindow::dropEvent(QDropEvent* event)
       connect(this, &MainWindow::scan, scanner, &DirectoryScanner::scan);
       connect(this, &MainWindow::scanStop, scanner, &DirectoryScanner::stop);
       connect(scanner, &DirectoryScanner::file, this, &MainWindow::addFile);
+      connect(scanner, &DirectoryScanner::finished, this, &MainWindow::scanFinished);
       threads.append(thread);
       thread->start();
       if (thread->isRunning()) emit scan();
@@ -75,7 +86,7 @@ void MainWindow::dropEvent(QDropEvent* event)
     }
     else
     {
-      qWarning() << "Unsupported file type:" << file.absoluteFilePath();
+      qWarning(MAIN_WINDOW) << "Unsupported file type:" << file.absoluteFilePath();
     }
   }
 }
@@ -86,7 +97,7 @@ void MainWindow::openDirectory()
 
 void MainWindow::stopScanning()
 {
-  qDebug("Emitting scanStop");
+  qDebug(MAIN_WINDOW) << "Emitting scanStop";
   emit scanStop();
 }
 
@@ -106,36 +117,19 @@ void MainWindow::aboutQt()
 
 void MainWindow::addFile(const QString file)
 {
-  //ui->statusbar->showMessage(file);
   files.add(file);
   //QCoreApplication::processEvents();
 }
 
+void MainWindow::scanFinished(const QString directory, int count)
+{
+  ui->actionStop_Scanning->setDisabled(true);
+  qInfo(MAIN_WINDOW) << "Finished scanning " << count <<
+    " image files in " << directory << " directory tree." ;
+}
+
 void MainWindow::showImage()
 {
-  auto scaleDown = [this](const QPixmap& pixmap) -> QPixmap {
-    QPixmap pm = pixmap;
-    if (pixmap.width() > width())
-    {
-      qDebug() << "Scaling pixmap width down from " << pixmap.width() << " to " << width();
-      pm = pixmap.scaledToWidth(width());
-    }
-
-    return pm;
-  };
-
-  auto scaleUp = [this](const QPixmap& pixmap) -> QPixmap
-  {
-    QPixmap pm = pixmap;
-    if (pixmap.height() < height())
-    {
-      qDebug() << "Scaling pixmap height up from " << pixmap.height() << " to " << height();
-      pm = pixmap.scaledToHeight(height());
-    }
-
-    return pm;
-  };
-
   if (files.isEmpty()) return;
   const auto& file = files.next();
 
@@ -145,24 +139,28 @@ void MainWindow::showImage()
 
   if (image.isNull())
   {
-    qDebug() << "Unable to display " << file;
+    ui->statusbar->showMessage(
+      QString( "Unable to display %1 (%2/%3)" ).arg( file ).
+        arg( files.currentIndex() + 1 ).
+        arg( files.count() ) );
     return;
   }
 
   auto pixmap = QPixmap::fromImage(image);
   const auto w = width();
   const auto h = height();
-  qDebug() << "Pixmap: " << pixmap.width() << "x" << pixmap.height() <<
-      "; window: " << width() << "x" << height();
 
-  pixmap = scaleUp(pixmap);
-  pixmap = scaleDown(pixmap);
-
-  qDebug() << "Resized pixmap: " << pixmap.width() << "x" << pixmap.height() <<
-      "; window: " << width() << "x" << height();
+  if (pixmap.height() < h)
+  {
+    pixmap = pixmap.scaledToHeight(h, Qt::SmoothTransformation);
+  }
+  if (pixmap.width() < w)
+  {
+    pixmap = pixmap.scaledToHeight(w, Qt::SmoothTransformation);
+  }
 
   ui->label->setPixmap(pixmap);
-  setFixedSize(w, h);
+  //setFixedSize(w, h);
   setWindowFilePath(file);
   ui->statusbar->showMessage(
     QString( "%1 (%2/%3)" ).arg( file ).

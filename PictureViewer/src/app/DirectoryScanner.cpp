@@ -1,10 +1,14 @@
 #include "DirectoryScanner.h"
 
 #include <QtCore/QDirIterator>
+#include <QtCore/QEventLoop>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QDebug>
 #include <QtGui/QImageReader>
 
 using com::sptci::DirectoryScanner;
+
+Q_LOGGING_CATEGORY( DIRECTORY_SCANNER, "com.sptci.DirectoryScanner" )
 
 DirectoryScanner::DirectoryScanner(const QString directory, QObject* parent) :
     QObject(parent), directory(directory) {}
@@ -16,33 +20,44 @@ DirectoryScanner::~DirectoryScanner()
 
 void DirectoryScanner::stop()
 {
-  qDebug("Stop requested");
+  qInfo(DIRECTORY_SCANNER) << "Stop requested";
   setAbort(true);
 }
 
 void DirectoryScanner::scan()
 {
+  QEventLoop loop;
   auto count = 0;
   QDirIterator iter{ directory, QDirIterator::Subdirectories};
   while (iter.hasNext())
   {
-    if (abort) return;
+    if (abort)
+    {
+      qInfo(DIRECTORY_SCANNER) << "Aborted scanning " << directory << " after " << count << " images";
+      return;
+    }
+
     const auto path = iter.next();
     if (iter.fileInfo().isDir()) continue;
     if (iter.fileInfo().fileName().contains("thumb")) continue;
+    if (iter.fileInfo().fileName().endsWith(".plist")) continue;
+    if (iter.fileInfo().fileName().endsWith(".db")) continue;
+    if (iter.fileInfo().fileName().endsWith(".html")) continue;
+    if (iter.fileInfo().fileName().startsWith("_")) continue;
 
     const auto bytes = QImageReader::imageFormat(path);
     if (!bytes.isEmpty())
     {
-      ++count;
       emit file(path);
+      if (!(++count % 100)) loop.processEvents();
     }
     else
     {
-      qDebug() << "Ignoring unsupported file " << path;
+      qDebug(DIRECTORY_SCANNER) << "Ignoring unsupported file " << path;
     }
   }
-  qDebug() << "Finished scanning " << directory << " with " << count << " images";
+  qInfo(DIRECTORY_SCANNER) << "Finished scanning " << directory << " with " << count << " images";
+  emit finished(directory, count);
 }
 
 void DirectoryScanner::setAbort(bool flag)

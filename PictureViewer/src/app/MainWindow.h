@@ -28,6 +28,7 @@ namespace com::sptci
     void aboutQt();
 
   protected:
+    void closeEvent(QCloseEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
 
@@ -37,6 +38,7 @@ namespace com::sptci
 
   private slots:
     void addFile(const QString file);
+    void scanFinished(const QString directory, int count);
     void showImage();
 
   private:

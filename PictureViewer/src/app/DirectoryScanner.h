@@ -15,6 +15,7 @@ namespace com::sptci
 
   signals:
     void file(const QString file);
+    void finished(const QString directory, int count);
 
   public slots:
     void scan();
