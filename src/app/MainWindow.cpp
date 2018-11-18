@@ -199,7 +199,9 @@ void MainWindow::displaySleep()
   {
 #if defined(Q_OS_MAC)
     qDebug(MAIN_WINDOW()) << "Starting caffeinate process";
-    caffeinate.start("/usr/bin/caffeinate");
+    QStringList arguments;
+    arguments << "-d";
+    caffeinate.start("/usr/bin/caffeinate", arguments);
 #elif defined(Q_OS_WIN)
     SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
 #endif

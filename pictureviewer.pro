@@ -22,6 +22,8 @@ UI_DIR = $$DESTDIR/.u
 macx {
   QMAKE_INFO_PLIST = resources/Info.plist
   ICON = resources/images/Icon.icns
+  QMAKE_CFLAGS += -gdwarf-2
+  QMAKE_CXXFLAGS += -gdwarf-2
 }
 
 
