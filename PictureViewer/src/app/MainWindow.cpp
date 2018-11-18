@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
   const bool flag = sleepFlag();
-  qInfo(MAIN_WINDOW) << "Stored display sleep flag: " << flag;
+  qDebug(MAIN_WINDOW) << "Stored display sleep flag: " << flag;
   ui->actionDisplay_sleep->setChecked(flag);
 #else
   ui->actionDisplay_sleep->setEnabled(false);
@@ -188,7 +188,7 @@ void MainWindow::displaySleep()
 #if defined(Q_OS_MAC)
     if (QProcess::Running == caffeinate.state())
     {
-      qInfo(MAIN_WINDOW()) << "Killing caffeinate process";
+      qDebug(MAIN_WINDOW()) << "Killing caffeinate process";
       caffeinate.kill();
     }
 #elif defined(Q_OS_WIN)
@@ -198,7 +198,7 @@ void MainWindow::displaySleep()
   else
   {
 #if defined(Q_OS_MAC)
-    qInfo(MAIN_WINDOW()) << "Starting caffeinate process";
+    qDebug(MAIN_WINDOW()) << "Starting caffeinate process";
     caffeinate.start("/usr/bin/caffeinate");
 #elif defined(Q_OS_WIN)
     SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
