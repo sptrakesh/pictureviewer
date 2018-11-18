@@ -16,12 +16,17 @@
 #include <algorithm>
 #include <iterator>
 
+#if defined(Q_OS_WIN)
+#include <winbase.h>
+#endif
+
 using com::sptci::MainWindow;
 
 Q_LOGGING_CATEGORY( MAIN_WINDOW, "com.sptci.MainWindow" )
 
 const QString MainWindow::RECENT_FILES = "recentFiles";
 const QString MainWindow::INTERVAL = "interval";
+const QString MainWindow::DISPLAY_SLEEP = "displaySleep";
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent), ui(new Ui::MainWindow)
@@ -36,9 +41,15 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->intervalSlider->setValue(time);
   connect(&timer, &QTimer::timeout, this, &MainWindow::showImage);
 
-#if defined(Q_OS_MAC)
-  ui->actionDisplay_sleep->setEnabled(true);
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+  const bool flag = sleepFlag();
+  qInfo(MAIN_WINDOW) << "Stored display sleep flag: " << flag;
+  ui->actionDisplay_sleep->setChecked(flag);
+#else
+  ui->actionDisplay_sleep->setEnabled(false);
 #endif
+
+  initialised = true;
 }
 
 MainWindow::~MainWindow()
@@ -48,7 +59,7 @@ MainWindow::~MainWindow()
 
   timer.stop();
 
-  std::for_each(begin(threads), end(threads), [](decltype(*begin(threads)) thread) {
+  std::for_each(begin(threads), end(threads), [](auto thread) {
     thread->quit();
     thread->wait(3000);
     thread->deleteLater();
@@ -163,21 +174,36 @@ void MainWindow::stopScanning()
 
 void MainWindow::displaySleep()
 {
-#if defined(Q_OS_MAC)
-  if (ui->actionDisplay_sleep->isChecked())
+  const auto flag =  ui->actionDisplay_sleep->isChecked();
+
+  if (initialised)
   {
+    QSettings settings;
+    settings.setValue(DISPLAY_SLEEP, flag);
+    qInfo(MAIN_WINDOW()) << "Setting displaySleep preference to " << flag;
+  }
+
+  if (flag)
+  {
+#if defined(Q_OS_MAC)
     if (QProcess::Running == caffeinate.state())
     {
       qInfo(MAIN_WINDOW()) << "Killing caffeinate process";
       caffeinate.kill();
     }
+#elif defined(Q_OS_WIN)
+    SetThreadExecutionState(ES_CONTINUOUS);
+#endif
   }
   else
   {
+#if defined(Q_OS_MAC)
     qInfo(MAIN_WINDOW()) << "Starting caffeinate process";
     caffeinate.start("/usr/bin/caffeinate");
-  }
+#elif defined(Q_OS_WIN)
+    SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
 #endif
+  }
 }
 
 void MainWindow::setIndex(int index)
@@ -187,13 +213,13 @@ void MainWindow::setIndex(int index)
 
 void MainWindow::setInterval(int interval)
 {
-  QSettings settings;
-  settings.setValue(INTERVAL, interval);
+  if (initialised)
+  {
+    QSettings settings;
+    settings.setValue(INTERVAL, interval);
+    qInfo(MAIN_WINDOW()) << "Setting timer interval preference to " << interval;
+  }
   timer.setInterval(interval * 1000);
-}
-
-void MainWindow::removeFile()
-{
 }
 
 void MainWindow::about()
@@ -256,6 +282,12 @@ int MainWindow::interval()
   return (settings.contains(INTERVAL)) ?
       settings.value(INTERVAL).toInt() :
       ui->intervalSlider->value();
+}
+
+bool MainWindow::sleepFlag()
+{
+  QSettings settings;
+  return settings.value(DISPLAY_SLEEP, true).toBool();
 }
 
 void MainWindow::processDirectory(const QString& filename)

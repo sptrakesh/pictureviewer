@@ -34,7 +34,6 @@ namespace com::sptci
     void displaySleep();
     void setIndex(int index);
     void setInterval(int interval);
-    void removeFile();
     void about();
     void aboutQt();
 
@@ -55,6 +54,7 @@ namespace com::sptci
 
   private:
     int interval();
+    bool sleepFlag();
     void processDirectory(const QString& dir);
     void addRecent(const QString& dir);
     void createRecent();
@@ -65,6 +65,7 @@ namespace com::sptci
   private:
     static const QString RECENT_FILES;
     static const QString INTERVAL;
+    static const QString DISPLAY_SLEEP;
 
     QTimer timer;
     FileList files;
@@ -79,6 +80,7 @@ namespace com::sptci
     Ui::MainWindow* ui;
     double scaleFactor = 1;
     bool playing = false;
+    bool initialised = false;
   };
 }
 

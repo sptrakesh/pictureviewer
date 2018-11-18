@@ -3,7 +3,7 @@ QT += core gui widgets
 TARGET = PictureViewer
 TEMPLATE = app
 
-CONFIG += c++1z
+CONFIG += c++1z sdk_no_version_check 
 QMAKE_CXXFLAGS = -std=c++17
 
 CONFIG(debug, debug|release) {

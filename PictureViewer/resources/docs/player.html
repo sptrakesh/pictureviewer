@@ -50,13 +50,14 @@
                       large directory trees. You can stop the scan for files
                       at any given time. The player will continue to display
                       the files that have been discovered thus far.</li>
-                      <li><strong>Display sleep</strong> - Relevant for
-                      Mac OS X only.  When left in default (checked) mode,
-                      user preferences (Energy Saver option) controls
-                      whether display goes to sleep or not.  If
-                      <em>unchecked</em>, uses the <code>caffeinate</code>
-                      command to prevent the display from going to sleep
-                      while app is running.</li>
+                      <li><strong>Display sleep</strong> - When left in
+                      default (checked) mode, user preferences (Energy Saver
+                      option on Mac OS X) controls whether display goes
+                      to sleep or not.  If <em>unchecked</em>, uses the
+                      <code>caffeinate</code> command to prevent the display
+                      from going to sleep while app is running. For Windows,
+                      use the SetThreadExecutionState function to achieve
+                      the same effect.</li>
                     </ul>
                     <h3>Limitations</h3>
                     At present the slider bars for controlling the time
