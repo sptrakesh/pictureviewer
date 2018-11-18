@@ -3,7 +3,21 @@ QT += core gui widgets
 TARGET = PictureViewer
 TEMPLATE = app
 
-CONFIG += c++17 sdk_no_version_check
+CONFIG += c++1z
+QMAKE_CXXFLAGS = -std=c++17
+
+CONFIG(debug, debug|release) {
+  DESTDIR = build/debug
+}
+CONFIG(release, debug|release) {
+  DESTDIR = build/release
+  CONFIG += optimize_full
+}
+
+OBJECTS_DIR = $$DESTDIR/.obj
+MOC_DIR = $$DESTDIR/.moc
+RCC_DIR = $$DESTDIR/.qrc
+UI_DIR = $$DESTDIR/.u
 
 macx {
   QMAKE_INFO_PLIST = resources/Info.plist
@@ -26,7 +40,6 @@ INCLUDEPATH += src/app
 HEADERS  += \
     src/app/InfoViewer.h \
     src/app/MainWindow.h \
-    src/app/KeyPressFilter.h \
     src/app/DirectoryScanner.h \
     src/app/FileList.h
 
@@ -34,7 +47,6 @@ SOURCES += \
     src/main.cpp \
     src/app/MainWindow.cpp \
     src/app/InfoViewer.cpp \
-    src/app/KeyPressFilter.cpp \
     src/app/DirectoryScanner.cpp \
     src/app/FileList.cpp
 

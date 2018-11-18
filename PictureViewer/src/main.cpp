@@ -1,7 +1,6 @@
 #include "app/MainWindow.h"
 
 #include <QtCore/QDateTime>
-#include <QtGui/QScreen>
 #include <QtWidgets/QApplication>
 
 namespace com::sptci
@@ -44,15 +43,13 @@ int main( int argc, char *argv[] )
 {
   qInstallMessageHandler(com::sptci::formatMessage);
   setbuf(stdout, nullptr);
+
   QApplication a( argc, argv );
   a.setOrganizationName( "Rakesh Vidyadharan" );
   a.setOrganizationDomain( "rakeshv.org" );
   a.setApplicationName( "Picture Viewer" );
 
   com::sptci::MainWindow w;
-  //const auto screenrect = a.primaryScreen()->geometry();
-  //w.move(screenrect.left(), screenrect.top());
-  //w.setFixedSize(screenrect.width(), static_cast<int>(0.95 *screenrect.height()));
   w.show();
 
   return a.exec();

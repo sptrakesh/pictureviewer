@@ -68,7 +68,11 @@
       </layout>
      </item>
      <item>
-      <widget class="QTextBrowser" name="textBrowser"/>
+      <widget class="QTextBrowser" name="textBrowser">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -127,28 +131,12 @@
   <connection>
    <sender>closeButton</sender>
    <signal>clicked()</signal>
-   <receiver>com::sptci::InfoViewer</receiver>
+   <receiver>InfoViewer</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>587</x>
      <y>29</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>319</x>
-     <y>239</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>textBrowser</sender>
-   <signal>sourceChanged(QUrl)</signal>
-   <receiver>com::sptci::InfoViewer</receiver>
-   <slot>updateWindowTitle()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>319</x>
-     <y>260</y>
     </hint>
     <hint type="destinationlabel">
      <x>319</x>

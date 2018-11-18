@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1" /><!-- Enables IE to use Chrome's rendering engine if installed -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="description" content="Picture player application" />
+        <title>Picture Player | Sans Pareil Technologies, Inc.</title>
+	</head>
+	<body>
+    <div id="container">
+        <div id="midContainer">
+			<div id="contentContainer"><!-- Start main content wrapper -->
+                <div id="content" style="color:black;"><!-- Start content -->
+                    <h1 style="color:blue;">Picture Player</h1>
+                    <h2 style="color:blue;">Version 1.0.1</h2>
+                    A simple photo/image/&hellip; viewer built using a
+                    <a href="http://doc.qt.io/qt-5/qlabel-members.html">QLabel</a>.
+                    Drop directories/folders you wish to view (including
+                    Apple Photos Photos Library.photoslibrary special bundle
+                    folder) and let the application display the image files
+                    it finds in sequence.  You can drop multiple
+                    directories/folders on to the application window, and
+                    it will find all viewable files and play them.
+                    <br /><br />
+                    Image files are loaded in background thread(s), ensuring
+                    that the player window stays usable and responsive at
+                    all times.  When multiple directories/folders are dropped
+                    (together using multiple selection or in quick succession),
+                    the directories/folders are scanned in parallel using
+                    multiple threads.  Hence, files from different directory
+                    trees will be loaded interleaving each other and displayed
+                    in the sequence that the various threads found them.
+                    <h3>Controls</h3>
+                    The application can be used to
+                    automatically "play" the image files it finds across
+                    directory trees, or flip through the files manually.
+                    <ul class="disc">
+                      <li><strong>Play</strong> - automatically flip through
+                      all images discovered in the loaded directory trees in
+                      sequence (that it was found) at intervals ranging from
+                      0 to 15 seconds.  Use the bottom right hand slider to
+                      control the interval at which the files are displayed.</li>
+                      <li><strong>Manual</strong> - The player automatically
+                      starts displaying image files it finds.  Pause the player
+                      to enter into manual mode.  In manual mode use the
+                      <em>Next</em> (right arrow key or menu), or <em>Previous</em>
+                      (left arrow key or menu) to flip through the image files
+                      that were discovered.</li>
+                      <li><strong>Stop Scanning</strong> - Useful for very
+                      large directory trees. You can stop the scan for files
+                      at any given time. The player will continue to display
+                      the files that have been discovered thus far.</li>
+                      <li><strong>Display sleep</strong> - Relevant for
+                      Mac OS X only.  When left in default (checked) mode,
+                      user preferences (Energy Saver option) controls
+                      whether display goes to sleep or not.  If
+                      <em>unchecked</em>, uses the <code>caffeinate</code>
+                      command to prevent the display from going to sleep
+                      while app is running.</li>
+                    </ul>
+                    <h3>Limitations</h3>
+                    At present the slider bars for controlling the time
+                    interval (bottom right) and index within the list of
+                    image files discovered (bottom left) are permanently
+                    displayed.  In a future release, the bottom slider
+                    area may be automatically displayed/hidden.
+				</div><!-- End content -->
+			</div><!-- End main content wrapper -->
+		</div>
+	</div><!-- End container -->
+	</body>
+</html>

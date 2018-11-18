@@ -1,4 +1,3 @@
-/* $Id: InfoViewer.cpp 5706 2014-11-27 19:10:55Z rakesh $ */
 #include "InfoViewer.h"
 #include "ui_InfoViewer.h"
 

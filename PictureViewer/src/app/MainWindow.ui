@@ -136,6 +136,7 @@
     <addaction name="actionFirst"/>
     <addaction name="separator"/>
     <addaction name="actionStop_Scanning"/>
+    <addaction name="actionDisplay_sleep"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -254,6 +255,20 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Left</string>
+   </property>
+  </action>
+  <action name="actionDisplay_sleep">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Display sleep</string>
    </property>
   </action>
  </widget>
@@ -426,6 +441,38 @@
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>previous()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPicture_Viewer</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>about()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDisplay_sleep</sender>
+   <signal>changed()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>displaySleep()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

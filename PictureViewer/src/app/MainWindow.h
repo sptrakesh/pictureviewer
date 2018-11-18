@@ -6,6 +6,10 @@
 #include <QtCore/QTimer>
 #include <QtWidgets/QMainWindow>
 
+#if defined(Q_OS_MAC)
+#include <QtCore/QProcess>
+#endif
+
 #include "FileList.h"
 
 namespace com::sptci
@@ -22,14 +26,16 @@ namespace com::sptci
 
   public slots:
     void openDirectory();
-    void stopScanning();
     void play();
     void first();
     void previous();
     void next();
+    void stopScanning();
+    void displaySleep();
     void setIndex(int index);
     void setInterval(int interval);
     void removeFile();
+    void about();
     void aboutQt();
 
   protected:
@@ -67,6 +73,9 @@ namespace com::sptci
     enum { MaxRecentFiles = 10 };
     QAction* recentFiles[MaxRecentFiles];
 
+#if defined(Q_OS_MAC)
+    QProcess caffeinate;
+#endif
     Ui::MainWindow* ui;
     double scaleFactor = 1;
     bool playing = false;

@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "DirectoryScanner.h"
+#include "InfoViewer.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
@@ -34,6 +35,10 @@ MainWindow::MainWindow(QWidget *parent) :
   timer.setInterval(time * 1000);
   ui->intervalSlider->setValue(time);
   connect(&timer, &QTimer::timeout, this, &MainWindow::showImage);
+
+#if defined(Q_OS_MAC)
+  ui->actionDisplay_sleep->setEnabled(true);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -48,6 +53,13 @@ MainWindow::~MainWindow()
     thread->wait(3000);
     thread->deleteLater();
   });
+
+#if defined(Q_OS_MAC)
+  if (QProcess::Running == caffeinate.state())
+  {
+    caffeinate.kill();
+  }
+#endif
 
   delete ui;
 }
@@ -100,12 +112,6 @@ void MainWindow::openDirectory()
   processDirectory(fileName);
 }
 
-void MainWindow::stopScanning()
-{
-  qDebug(MAIN_WINDOW) << "Emitting scanStop";
-  emit scanStop();
-}
-
 void MainWindow::play()
 {
   ui->actionPlay->setEnabled(true);
@@ -149,6 +155,31 @@ void MainWindow::next()
   displayImage(files.next());
 }
 
+void MainWindow::stopScanning()
+{
+  qDebug(MAIN_WINDOW) << "Emitting scanStop";
+  emit scanStop();
+}
+
+void MainWindow::displaySleep()
+{
+#if defined(Q_OS_MAC)
+  if (ui->actionDisplay_sleep->isChecked())
+  {
+    if (QProcess::Running == caffeinate.state())
+    {
+      qInfo(MAIN_WINDOW()) << "Killing caffeinate process";
+      caffeinate.kill();
+    }
+  }
+  else
+  {
+    qInfo(MAIN_WINDOW()) << "Starting caffeinate process";
+    caffeinate.start("/usr/bin/caffeinate");
+  }
+#endif
+}
+
 void MainWindow::setIndex(int index)
 {
   files.setIndex(index);
@@ -163,6 +194,11 @@ void MainWindow::setInterval(int interval)
 
 void MainWindow::removeFile()
 {
+}
+
+void MainWindow::about()
+{
+  com::sptci::InfoViewer::showPage("player.html");
 }
 
 void MainWindow::aboutQt()
