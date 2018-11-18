@@ -23,6 +23,7 @@ const QString& FileList::at(int index)
 
 const QString& FileList::first()
 {
+  index = 0;
   return files.first();
 }
 

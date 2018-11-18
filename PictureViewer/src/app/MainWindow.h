@@ -24,6 +24,9 @@ namespace com::sptci
     void openDirectory();
     void stopScanning();
     void play();
+    void first();
+    void previous();
+    void next();
     void setIndex(int index);
     void setInterval(int interval);
     void removeFile();
@@ -39,14 +42,31 @@ namespace com::sptci
     void scanStop();
 
   private slots:
+    void openRecent();
     void addFile(const QString file);
     void scanFinished(const QString directory, int count);
     void showImage();
 
   private:
+    int interval();
+    void processDirectory(const QString& dir);
+    void addRecent(const QString& dir);
+    void createRecent();
+    void updateRecent();
+    void showImageAt(int index);
+    void displayImage(const QString& file);
+
+  private:
+    static const QString RECENT_FILES;
+    static const QString INTERVAL;
+
     QTimer timer;
     FileList files;
     QList<QThread*> threads;
+
+    enum { MaxRecentFiles = 10 };
+    QAction* recentFiles[MaxRecentFiles];
+
     Ui::MainWindow* ui;
     double scaleFactor = 1;
     bool playing = false;

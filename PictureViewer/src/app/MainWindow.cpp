@@ -3,12 +3,14 @@
 #include "DirectoryScanner.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QFileInfo>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMimeData>
-#include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QImageReader>
+#include <QtWidgets/QFileDialog>
 
 #include <algorithm>
 #include <iterator>
@@ -17,13 +19,20 @@ using com::sptci::MainWindow;
 
 Q_LOGGING_CATEGORY( MAIN_WINDOW, "com.sptci.MainWindow" )
 
+const QString MainWindow::RECENT_FILES = "recentFiles";
+const QString MainWindow::INTERVAL = "interval";
+
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent), ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
   ui->label->setBackgroundRole(QPalette::Base);
 
-  timer.setInterval(ui->intervalSlider->value() * 1000);
+  createRecent();
+
+  const auto time = interval();
+  timer.setInterval(time * 1000);
+  ui->intervalSlider->setValue(time);
   connect(&timer, &QTimer::timeout, this, &MainWindow::showImage);
 }
 
@@ -64,26 +73,15 @@ void MainWindow::dropEvent(QDropEvent* event)
     const auto fileName = url.toLocalFile();
     qInfo(MAIN_WINDOW) << "Dropped file:" << fileName;
 
-    const QFileInfo file{fileName};
+    const QFileInfo file(fileName);
     if (file.isDir())
     {
-      ui->actionStop_Scanning->setEnabled(true);
-      auto scanner = new DirectoryScanner(file.absoluteFilePath());
-      auto thread = new QThread;
-      scanner->moveToThread(thread);
-      connect(thread, &QThread::finished, scanner, &QObject::deleteLater);
-      connect(this, &MainWindow::scan, scanner, &DirectoryScanner::scan);
-      connect(this, &MainWindow::scanStop, scanner, &DirectoryScanner::stop);
-      connect(scanner, &DirectoryScanner::file, this, &MainWindow::addFile);
-      connect(scanner, &DirectoryScanner::finished, this, &MainWindow::scanFinished);
-      threads.append(thread);
-      thread->start();
-      emit scan();
-      play();
+      processDirectory(fileName);
     }
     else if (file.isFile())
     {
       files.add(file.absoluteFilePath());
+      displayImage(file.absoluteFilePath());
     }
     else
     {
@@ -94,6 +92,12 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 void MainWindow::openDirectory()
 {
+  const QString& fileName = QFileDialog::getExistingDirectory(
+        this, tr("Select Directory"));
+
+  if (fileName.isNull() || fileName.isEmpty()) return;
+  addRecent(fileName);
+  processDirectory(fileName);
 }
 
 void MainWindow::stopScanning()
@@ -104,9 +108,45 @@ void MainWindow::stopScanning()
 
 void MainWindow::play()
 {
-  if (playing) timer.stop();
-  else timer.start();
+  ui->actionPlay->setEnabled(true);
+
+  if (playing)
+  {
+    QIcon icon( ":/images/Play.png" );
+    ui->actionPlay->setIcon(icon);
+    ui->actionPlay->setText("Play");
+    timer.stop();
+    ui->actionFirst->setEnabled(true);
+    ui->actionPrevious->setEnabled(true);
+    ui->actionNext->setEnabled(true);
+  }
+  else
+  {
+    QIcon icon( ":/images/Pause.png" );
+    ui->actionPlay->setIcon(icon);
+    ui->actionPlay->setText("Pause");
+    ui->actionFirst->setEnabled(false);
+    ui->actionPrevious->setEnabled(false);
+    ui->actionNext->setEnabled(false);
+    timer.start();
+  }
+
   playing = !playing;
+}
+
+void MainWindow::first()
+{
+  displayImage(files.first());
+}
+
+void MainWindow::previous()
+{
+  displayImage(files.previous());
+}
+
+void MainWindow::next()
+{
+  displayImage(files.next());
 }
 
 void MainWindow::setIndex(int index)
@@ -116,6 +156,8 @@ void MainWindow::setIndex(int index)
 
 void MainWindow::setInterval(int interval)
 {
+  QSettings settings;
+  settings.setValue(INTERVAL, interval);
   timer.setInterval(interval * 1000);
 }
 
@@ -126,6 +168,16 @@ void MainWindow::removeFile()
 void MainWindow::aboutQt()
 {
   qApp->aboutQt();
+}
+
+void MainWindow::openRecent()
+{
+  QAction* action = qobject_cast<QAction*>( sender() );
+  if (action)
+  {
+    const QString& file = action->data().toString();
+    processDirectory(file);
+  }
 }
 
 void MainWindow::addFile(const QString file)
@@ -159,7 +211,105 @@ void MainWindow::showImage()
 {
   if (files.isEmpty()) return;
   const auto& file = files.next();
+  displayImage(file);
+}
 
+int MainWindow::interval()
+{
+  QSettings settings;
+  return (settings.contains(INTERVAL)) ?
+      settings.value(INTERVAL).toInt() :
+      ui->intervalSlider->value();
+}
+
+void MainWindow::processDirectory(const QString& filename)
+{
+  ui->actionStop_Scanning->setEnabled(true);
+  addRecent(filename);
+
+  const QFileInfo file(filename);
+  auto scanner = new DirectoryScanner(file.absoluteFilePath());
+  auto thread = new QThread;
+  scanner->moveToThread(thread);
+  connect(thread, &QThread::finished, scanner, &QObject::deleteLater);
+  connect(this, &MainWindow::scan, scanner, &DirectoryScanner::scan);
+  connect(this, &MainWindow::scanStop, scanner, &DirectoryScanner::stop);
+  connect(scanner, &DirectoryScanner::file, this, &MainWindow::addFile);
+  connect(scanner, &DirectoryScanner::finished, this, &MainWindow::scanFinished);
+  threads.append(thread);
+  thread->start();
+
+  emit scan();
+  play();
+}
+
+void MainWindow::addRecent(const QString& fileName)
+{
+  QSettings settings;
+  QStringList files = settings.value(RECENT_FILES).toStringList();
+  files.removeAll(fileName);
+  files.prepend(fileName);
+  while (files.size() > MaxRecentFiles) files.removeLast();
+
+  settings.setValue(RECENT_FILES, files);
+  updateRecent();
+}
+
+void MainWindow::createRecent()
+{
+  if ( ! ui->actionRecent->menu() )
+  {
+    ui->actionRecent->setMenu( new QMenu( this ) );
+  }
+
+  for (int i = 0; i < MaxRecentFiles; ++i)
+  {
+    recentFiles[i] = new QAction(this);
+    recentFiles[i]->setCheckable(true);
+    recentFiles[i]->setVisible(false);
+    connect(recentFiles[i], &QAction::triggered, this, &MainWindow::openRecent);
+    ui->actionRecent->menu()->addAction(recentFiles[i]);
+  }
+
+  updateRecent();
+}
+
+void MainWindow::updateRecent()
+{
+  QSettings settings;
+  QStringList dirs = settings.value(RECENT_FILES).toStringList();
+
+  int numRecentFiles = qMin(dirs.size(), static_cast<int>(MaxRecentFiles));
+
+  int index = 0;
+  for (int i = 0; i < numRecentFiles; ++i)
+  {
+    QString text = tr("&%1: %2").arg(index + 1).arg(dirs[i]);
+    recentFiles[index]->setText(text);
+    recentFiles[index]->setData(dirs[i]);
+    recentFiles[index]->setVisible(true);
+    recentFiles[index]->setStatusTip(dirs[i]);
+    recentFiles[index]->setToolTip(dirs[i]);
+
+    if (!QFile(dirs[i]).exists()) recentFiles[index]->setEnabled(false);
+    ++index;
+  }
+
+  for (int i = numRecentFiles; i < MaxRecentFiles; ++i)
+  {
+    recentFiles[i]->setVisible(false);
+  }
+}
+
+void MainWindow::showImageAt(int index)
+{
+  if (files.isEmpty()) return;
+  const auto& file = files.at(index);
+  displayImage(file);
+}
+
+void MainWindow::displayImage(const QString& file)
+{
   QImageReader reader(file);
   reader.setAutoTransform(true);
   const QImage image = reader.read();

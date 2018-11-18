@@ -131,6 +131,9 @@
      <string>Playback</string>
     </property>
     <addaction name="actionPlay"/>
+    <addaction name="actionPrevious"/>
+    <addaction name="actionNext"/>
+    <addaction name="actionFirst"/>
     <addaction name="separator"/>
     <addaction name="actionStop_Scanning"/>
    </widget>
@@ -176,6 +179,13 @@
    </property>
   </action>
   <action name="actionPlay">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources/resources.qrc">
+     <normaloff>:/images/Play.png</normaloff>:/images/Play.png</iconset>
+   </property>
    <property name="text">
     <string>Play</string>
    </property>
@@ -201,8 +211,55 @@
     <string>Stop Scanning</string>
    </property>
   </action>
+  <action name="actionNext">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources/resources.qrc">
+     <normaloff>:/images/FastForward.png</normaloff>:/images/FastForward.png</iconset>
+   </property>
+   <property name="text">
+    <string>Next</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="actionPrevious">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources/resources.qrc">
+     <normaloff>:/images/rewind.png</normaloff>:/images/rewind.png</iconset>
+   </property>
+   <property name="text">
+    <string>Previous</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actionFirst">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources/resources.qrc">
+     <normaloff>:/images/start.png</normaloff>:/images/start.png</iconset>
+   </property>
+   <property name="text">
+    <string>First</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Left</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../resources/resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionQt</sender>
@@ -224,7 +281,7 @@
    <sender>actionOpen</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>close()</slot>
+   <slot>openDirectory()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -272,7 +329,7 @@
    <sender>actionPlay</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>close()</slot>
+   <slot>play()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -325,6 +382,54 @@
     <hint type="sourcelabel">
      <x>330</x>
      <y>547</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionFirst</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>first()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNext</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>next()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPrevious</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>

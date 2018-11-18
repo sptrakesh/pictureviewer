@@ -1,7 +1,12 @@
 <RCC>
     <qresource prefix="/">
+        <file>images/FastForward.png</file>
         <file>images/Icon.icns</file>
         <file>images/Icon.ico</file>
         <file>images/Icon.png</file>
+        <file>images/Pause.png</file>
+        <file>images/Play.png</file>
+        <file>images/rewind.png</file>
+        <file>images/start.png</file>
     </qresource>
 </RCC>
