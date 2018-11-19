@@ -55,6 +55,7 @@ namespace com::sptci
     void showImage();
 
   private:
+    QString trimTrailingDirectorySeparator(const QString& input);
     int interval();
     bool sleepFlag();
     void processDirectory(const QString& dir);

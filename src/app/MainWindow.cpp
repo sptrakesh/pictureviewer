@@ -123,11 +123,10 @@ void MainWindow::openDirectory()
   const auto directory = picturesLocations.isEmpty() ?
     QDir::currentPath() : picturesLocations.last();
 
-  const QString& fileName = QFileDialog::getExistingDirectory(
+  const auto fileName = QFileDialog::getExistingDirectory(
         this, tr("Select Directory"), directory);
   if (fileName.isNull() || fileName.isEmpty()) return;
 
-  addRecent(fileName);
   processDirectory(fileName);
 }
 
@@ -340,6 +339,24 @@ void MainWindow::showImage()
   displayImage(file);
 }
 
+QString MainWindow::trimTrailingDirectorySeparator(const QString& input)
+{
+  auto fileName = input;
+  if (fileName.endsWith("/"))
+  {
+    const auto pos = fileName.lastIndexOf(QChar('/'));
+    fileName = fileName.left(pos);
+  }
+
+  if (fileName.endsWith("\\"))
+  {
+    const auto pos = fileName.lastIndexOf(QChar('\\'));
+    fileName = fileName.left(pos);
+  }
+
+  return fileName;
+}
+
 int MainWindow::interval()
 {
   QSettings settings;
@@ -356,8 +373,9 @@ bool MainWindow::sleepFlag()
 
 void MainWindow::processDirectory(const QString& filename)
 {
+  const auto trimmed = trimTrailingDirectorySeparator(filename);
   ui->actionStop_Scanning->setEnabled(true);
-  addRecent(filename);
+  addRecent(trimmed);
 
   const QFileInfo file(filename);
   auto scanner = new DirectoryScanner(file.absoluteFilePath());

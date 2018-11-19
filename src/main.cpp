@@ -46,7 +46,7 @@ int main( int argc, char *argv[] )
 
   QApplication a( argc, argv );
   a.setOrganizationName( "Rakesh Vidyadharan" );
-  a.setOrganizationDomain( "rakeshv.org" );
+  a.setOrganizationDomain( "com.sptci" );
   a.setApplicationName( "Picture Viewer" );
 
   com::sptci::MainWindow w;
