@@ -11,6 +11,7 @@
 #endif
 
 #include "FileList.h"
+#include "TextWidget.h"
 
 namespace com::sptci
 {
@@ -43,12 +44,14 @@ namespace com::sptci
     void closeEvent(QCloseEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
+    bool event(QEvent* event) override;
 
   signals:
     void scan();
     void scanStop();
 
   private slots:
+    void positionTextWidget();
     void openRecent();
     void addFile(const QString file);
     void scanFinished(const QString directory, int count);
@@ -57,7 +60,9 @@ namespace com::sptci
   private:
     QString trimTrailingDirectorySeparator(const QString& input);
     int interval();
+    void initInterval();
     bool sleepFlag();
+    void initDisplaySleep();
     void processDirectory(const QString& dir);
     void addRecent(const QString& dir);
     void createRecent();
@@ -81,6 +86,7 @@ namespace com::sptci
     QProcess caffeinate;
 #endif
     Ui::MainWindow* ui;
+    TextWidget* intervalTextWidget;
     double scaleFactor = 1;
     bool playing = false;
     bool initialised = false;

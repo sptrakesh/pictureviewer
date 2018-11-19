@@ -37,21 +37,13 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->label->setBackgroundRole(QPalette::Base);
 
   createRecent();
-
-  const auto time = interval();
-  timer.setInterval(time * 1000);
-  ui->intervalSlider->setValue(time);
-  connect(&timer, &QTimer::timeout, this, &MainWindow::showImage);
-
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
-  const bool flag = sleepFlag();
-  qDebug(MAIN_WINDOW) << "Stored display sleep flag: " << flag;
-  ui->actionDisplay_sleep->setChecked(flag);
-#else
-  ui->actionDisplay_sleep->setEnabled(false);
-#endif
+  initInterval();
+  initDisplaySleep();
 
   ui->statusbar->setStyleSheet("QStatusBar{color:black}");
+  intervalTextWidget = new TextWidget(QString("%1 : %2s").
+      arg(tr("Playback Interval")).
+      arg(ui->intervalSlider->value()), this);
   initialised = true;
 }
 
@@ -114,6 +106,26 @@ void MainWindow::dropEvent(QDropEvent* event)
       qWarning(MAIN_WINDOW) << "Unsupported file type:" << file.absoluteFilePath();
     }
   }
+}
+
+bool MainWindow::event(QEvent* event)
+{
+  switch (event->type())
+  {
+  case QEvent::Show:
+      intervalTextWidget->show();
+      QTimer::singleShot(50, this, &MainWindow::positionTextWidget);
+      break;
+  case QEvent::WindowActivate:
+  case QEvent::Resize:
+  case QEvent::Move:
+      positionTextWidget();
+      break;
+  default:
+      break;
+  }
+
+  return QMainWindow::event(event);
 }
 
 void MainWindow::openDirectory()
@@ -281,6 +293,11 @@ void MainWindow::setInterval(int interval)
     QSettings settings;
     settings.setValue(INTERVAL, interval);
     qInfo(MAIN_WINDOW()) << "Setting timer interval preference to " << interval;
+
+    delete intervalTextWidget;
+    intervalTextWidget = new TextWidget(QString("%1s").arg(interval), this);
+    intervalTextWidget->show();
+    positionTextWidget();
   }
   timer.setInterval(interval * 1000);
 }
@@ -293,6 +310,26 @@ void MainWindow::about()
 void MainWindow::aboutQt()
 {
   qApp->aboutQt();
+}
+
+void MainWindow::positionTextWidget()
+{
+  if (intervalTextWidget->width() <= ui->label->width() &&
+      intervalTextWidget->height() <= ui->label->height())
+  {
+    intervalTextWidget->setWindowOpacity(1); // Show the widget
+    QPoint p = ui->label->mapToGlobal(ui->label->pos());
+    int x = p.x() + (ui->label->width() - intervalTextWidget->width()) / 2;
+    int y = p.y() + (ui->label->height() - intervalTextWidget->height()) / 2;
+    intervalTextWidget->move(x, y);
+    intervalTextWidget->raise();
+  }
+  else
+  {
+    intervalTextWidget->setWindowOpacity(0); // Hide the widget
+  }
+
+  QTimer::singleShot(5000, intervalTextWidget, &TextWidget::close);
 }
 
 void MainWindow::openRecent()
@@ -365,10 +402,29 @@ int MainWindow::interval()
       ui->intervalSlider->value();
 }
 
+void MainWindow::initInterval()
+{
+  const auto time = interval();
+  timer.setInterval(time * 1000);
+  ui->intervalSlider->setValue(time);
+  connect(&timer, &QTimer::timeout, this, &MainWindow::showImage);
+}
+
 bool MainWindow::sleepFlag()
 {
   QSettings settings;
   return settings.value(DISPLAY_SLEEP, true).toBool();
+}
+
+void MainWindow::initDisplaySleep()
+{
+#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+  const bool flag = sleepFlag();
+  qDebug(MAIN_WINDOW) << "Stored display sleep flag: " << flag;
+  ui->actionDisplay_sleep->setChecked(flag);
+#else
+  ui->actionDisplay_sleep->setEnabled(false);
+#endif
 }
 
 void MainWindow::processDirectory(const QString& filename)

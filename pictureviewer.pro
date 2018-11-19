@@ -43,14 +43,16 @@ HEADERS  += \
     src/app/InfoViewer.h \
     src/app/MainWindow.h \
     src/app/DirectoryScanner.h \
-    src/app/FileList.h
+    src/app/FileList.h \
+    src/app/TextWidget.h
 
 SOURCES += \
     src/main.cpp \
     src/app/MainWindow.cpp \
     src/app/InfoViewer.cpp \
     src/app/DirectoryScanner.cpp \
-    src/app/FileList.cpp
+    src/app/FileList.cpp \
+    src/app/TextWidget.cpp
 
 FORMS    += \
     src/app/InfoViewer.ui \
