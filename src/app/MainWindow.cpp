@@ -8,6 +8,7 @@
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMimeData>
 #include <QtCore/QSettings>
+#include <QtCore/QStandardPaths>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QImageReader>
@@ -115,10 +116,15 @@ void MainWindow::dropEvent(QDropEvent* event)
 
 void MainWindow::openDirectory()
 {
-  const QString& fileName = QFileDialog::getExistingDirectory(
-        this, tr("Select Directory"));
+  const auto picturesLocations =
+    QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+  const auto directory = picturesLocations.isEmpty() ?
+    QDir::currentPath() : picturesLocations.last();
 
+  const QString& fileName = QFileDialog::getExistingDirectory(
+        this, tr("Select Directory"), directory);
   if (fileName.isNull() || fileName.isEmpty()) return;
+
   addRecent(fileName);
   processDirectory(fileName);
 }
@@ -208,9 +214,34 @@ void MainWindow::displaySleep()
   }
 }
 
+void MainWindow::showFile()
+{
+  const auto filePath = files.current();
+
+#if defined(Q_OS_MAC)
+  QStringList args;
+  args << "-e";
+  args << "tell application \"Finder\"";
+  args << "-e";
+  args << "activate";
+  args << "-e";
+  args << "select POSIX file \"" + filePath + "\"";
+  args << "-e";
+  args << "end tell";
+  QProcess::startDetached( "osascript", args );
+#elif defined(Q_OS_WIN)
+  QStringList args;
+  args << "/select," << QDir::toNativeSeparators(filePath);
+  QProcess::startDetached("explorer", args);
+#endif
+}
+
 void MainWindow::setIndex(int index)
 {
   files.setIndex(index);
+  if (playing) return;
+
+  displayImage(files.current());
 }
 
 void MainWindow::setInterval(int interval)

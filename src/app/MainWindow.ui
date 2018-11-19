@@ -137,6 +137,7 @@
     <addaction name="separator"/>
     <addaction name="actionStop_Scanning"/>
     <addaction name="actionDisplay_sleep"/>
+    <addaction name="actionShow_File"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -269,6 +270,14 @@
    </property>
    <property name="text">
     <string>Display sleep</string>
+   </property>
+  </action>
+  <action name="actionShow_File">
+   <property name="text">
+    <string>Show File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>
@@ -473,6 +482,22 @@
    <signal>changed()</signal>
    <receiver>MainWindow</receiver>
    <slot>displaySleep()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShow_File</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showFile()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

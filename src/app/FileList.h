@@ -22,6 +22,7 @@ namespace com::sptci
     const QString& first();
     const QString& next();
     const QString& previous();
+    const QString& current() { return files.at(index); }
 
     int count() const { return files.count(); }
     void clear() { files.clear(); }
