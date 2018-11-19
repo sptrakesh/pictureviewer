@@ -13,6 +13,7 @@
 #include <QtGui/QDropEvent>
 #include <QtGui/QImageReader>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 
 #include <algorithm>
 #include <iterator>
@@ -50,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->actionDisplay_sleep->setEnabled(false);
 #endif
 
+  ui->statusbar->setStyleSheet("QStatusBar{color:black}");
   initialised = true;
 }
 
@@ -234,6 +236,35 @@ void MainWindow::showFile()
   args << "/select," << QDir::toNativeSeparators(filePath);
   QProcess::startDetached("explorer", args);
 #endif
+}
+
+void MainWindow::removeFile()
+{
+  const auto status = playing;
+
+  if (status) play();
+
+  const auto file = files.current();
+  auto message = QString("%1\n%2%3%4").
+    arg("Delete selected file?\n").
+    arg("File (").arg(file).
+    arg(") will be removed permanently from the filesystem!");
+  int response = QMessageBox::warning(this, tr("Delete File?"),
+    message, QMessageBox::No, QMessageBox::Yes);
+
+  if (response == QMessageBox::Yes)
+  {
+    if (!files.remove())
+    {
+      message = QString("%1%2%3\n%4").
+        arg("File (").arg(file).
+        arg(") could not be removed from the filesystem!").
+        arg("You may not have sufficient privileges to remove files.");
+      QMessageBox::information(this, "Delete File", message, QMessageBox::Close);
+    }
+  }
+
+  if (status) play();
 }
 
 void MainWindow::setIndex(int index)

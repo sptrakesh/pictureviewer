@@ -24,12 +24,14 @@ namespace com::sptci
     const QString& previous();
     const QString& current() { return files.at(index); }
 
+    bool remove();
+
     int count() const { return files.count(); }
     void clear() { files.clear(); }
 
   private:
-    int index = -1;
     QList<QString> files;
+    int index = -1;
   };
 }
 

@@ -137,7 +137,9 @@
     <addaction name="separator"/>
     <addaction name="actionStop_Scanning"/>
     <addaction name="actionDisplay_sleep"/>
+    <addaction name="separator"/>
     <addaction name="actionShow_File"/>
+    <addaction name="actionDelete_File"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -278,6 +280,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionDelete_File">
+   <property name="text">
+    <string>Delete File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Backspace</string>
    </property>
   </action>
  </widget>
@@ -498,6 +508,22 @@
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>showFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDelete_File</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>removeFile()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

@@ -1,5 +1,7 @@
 #include "FileList.h"
 
+#include <QtCore/QFile>
+
 using com::sptci::FileList;
 
 FileList::FileList(QObject *parent) : QObject(parent) {}
@@ -37,4 +39,12 @@ const QString& FileList::previous()
 {
   if (--index < 0) index = files.count() - 1;
   return files.at(index);
+}
+
+bool FileList::remove()
+{
+  if (index < 0) return false;
+  const auto result = QFile::remove(current());
+  if (result) files.removeAt(index);
+  return result;
 }

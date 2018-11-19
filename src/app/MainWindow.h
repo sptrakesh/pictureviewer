@@ -33,6 +33,7 @@ namespace com::sptci
     void stopScanning();
     void displaySleep();
     void showFile();
+    void removeFile();
     void setIndex(int index);
     void setInterval(int interval);
     void about();
