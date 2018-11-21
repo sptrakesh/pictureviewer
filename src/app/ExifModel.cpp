@@ -118,7 +118,8 @@ QVariant ExifModel::data(const QModelIndex& index, int role) const
   }
 
 #if defined(Q_OS_MAC)
-  if (Qt::BackgroundRole == role) return QColor(Qt::black);
+  if (Qt::BackgroundRole == role) return QColor(Qt::white);
+  if (Qt::ForegroundRole == role) return QColor(Qt::black);
 #endif
 
   return QVariant();
@@ -132,7 +133,7 @@ QVariant ExifModel::headerData(int section, Qt::Orientation orientation,
 
   switch (section)
   {
-    case 0: return tr( "Key" );
+    case 0: return tr( "Metadata Tag" );
     case 1: return tr( "Value" );
     default: return QVariant();
   }

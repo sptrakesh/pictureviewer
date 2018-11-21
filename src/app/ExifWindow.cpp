@@ -11,6 +11,7 @@ ExifWindow::ExifWindow(const QString& file, QWidget *parent) :
   ui->setupUi(this);
   auto model = new ExifModel(file, this);
   ui->tableView->setModel(model);
+  ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 ExifWindow::~ExifWindow()
