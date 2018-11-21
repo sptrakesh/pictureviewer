@@ -37,6 +37,7 @@ namespace com::sptci
     void removeFile();
     void setIndex(int index);
     void setInterval(int interval);
+    void viewExif();
     void about();
     void aboutQt();
 

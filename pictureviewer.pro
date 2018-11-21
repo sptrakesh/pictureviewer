@@ -40,22 +40,29 @@ win32 {
 INCLUDEPATH += src/app
 
 HEADERS  += \
+    src/ext/exif.h \
     src/app/InfoViewer.h \
     src/app/MainWindow.h \
     src/app/DirectoryScanner.h \
     src/app/FileList.h \
-    src/app/TextWidget.h
+    src/app/TextWidget.h \
+    src/app/ExifModel.h \
+    src/app/ExifWindow.h
 
 SOURCES += \
     src/main.cpp \
+    src/ext/exif.cpp \
     src/app/MainWindow.cpp \
     src/app/InfoViewer.cpp \
     src/app/DirectoryScanner.cpp \
     src/app/FileList.cpp \
-    src/app/TextWidget.cpp
+    src/app/TextWidget.cpp \
+    src/app/ExifModel.cpp \
+    src/app/ExifWindow.cpp
 
 FORMS    += \
     src/app/InfoViewer.ui \
-    src/app/MainWindow.ui
+    src/app/MainWindow.ui \
+    src/app/ExifWindow.ui
 
 RESOURCES += resources/resources.qrc

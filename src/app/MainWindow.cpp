@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 #include "DirectoryScanner.h"
 #include "InfoViewer.h"
+#include "ExifWindow.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
@@ -24,7 +25,7 @@
 
 using com::sptci::MainWindow;
 
-Q_LOGGING_CATEGORY( MAIN_WINDOW, "com.sptci.MainWindow" )
+Q_LOGGING_CATEGORY(MAIN_WINDOW, "com.sptci.MainWindow")
 
 const QString MainWindow::RECENT_FILES = "recentFiles";
 const QString MainWindow::INTERVAL = "interval";
@@ -99,6 +100,7 @@ void MainWindow::dropEvent(QDropEvent* event)
     else if (file.isFile())
     {
       files.add(file.absoluteFilePath());
+      if (files.currentIndex() < 0) files.next();
       displayImage(file.absoluteFilePath());
     }
     else
@@ -300,6 +302,13 @@ void MainWindow::setInterval(int interval)
     positionTextWidget();
   }
   timer.setInterval(interval * 1000);
+}
+
+void MainWindow::viewExif()
+{
+  const auto file = files.current();
+  auto window = new ExifWindow(file, this);
+  window->show();
 }
 
 void MainWindow::about()
@@ -518,7 +527,7 @@ void MainWindow::displayImage(const QString& file)
 {
   QImageReader reader(file);
   reader.setAutoTransform(true);
-  const QImage image = reader.read();
+  const auto image = reader.read();
 
   if (image.isNull())
   {
@@ -528,6 +537,9 @@ void MainWindow::displayImage(const QString& file)
         arg( files.count() ) );
     return;
   }
+
+  const auto format = QImageReader::imageFormat(file);
+  ui->actionView_Exif->setEnabled((format == "jpeg"));
 
   auto pixmap = QPixmap::fromImage(image);
   pixmap = pixmap.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);

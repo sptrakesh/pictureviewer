@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>com::sptci::MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <widget class="QMainWindow" name="com::sptci::MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -149,9 +149,6 @@
     <addaction name="separator"/>
     <addaction name="actionStop_Scanning"/>
     <addaction name="actionDisplay_sleep"/>
-    <addaction name="separator"/>
-    <addaction name="actionShow_File"/>
-    <addaction name="actionDelete_File"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -160,8 +157,18 @@
     <addaction name="actionPicture_Viewer"/>
     <addaction name="actionQt"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionShow_File"/>
+    <addaction name="actionView_Exif"/>
+    <addaction name="separator"/>
+    <addaction name="actionDelete_File"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlayback"/>
+   <addaction name="menuTools"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -302,6 +309,14 @@
     <string>Ctrl+Backspace</string>
    </property>
   </action>
+  <action name="actionView_Exif">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>View Exif</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../../resources/resources.qrc"/>
@@ -310,7 +325,7 @@
   <connection>
    <sender>actionQt</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>aboutQt()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -326,7 +341,7 @@
   <connection>
    <sender>actionOpen</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>openDirectory()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -342,7 +357,7 @@
   <connection>
    <sender>actionStop_Scanning</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>stopScanning()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -358,7 +373,7 @@
   <connection>
    <sender>actionClose</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -374,7 +389,7 @@
   <connection>
    <sender>actionPlay</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>play()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -390,7 +405,7 @@
   <connection>
    <sender>actionQuit</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -406,7 +421,7 @@
   <connection>
    <sender>intervalSlider</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>setInterval(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -422,7 +437,7 @@
   <connection>
    <sender>indexSlider</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>setIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -438,7 +453,7 @@
   <connection>
    <sender>actionFirst</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>first()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -454,7 +469,7 @@
   <connection>
    <sender>actionNext</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>next()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -470,7 +485,7 @@
   <connection>
    <sender>actionPrevious</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>previous()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -486,7 +501,7 @@
   <connection>
    <sender>actionPicture_Viewer</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>about()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -502,7 +517,7 @@
   <connection>
    <sender>actionDisplay_sleep</sender>
    <signal>changed()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>displaySleep()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -518,7 +533,7 @@
   <connection>
    <sender>actionShow_File</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>showFile()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -534,8 +549,24 @@
   <connection>
    <sender>actionDelete_File</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>com::sptci::MainWindow</receiver>
    <slot>removeFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionView_Exif</sender>
+   <signal>triggered()</signal>
+   <receiver>com::sptci::MainWindow</receiver>
+   <slot>viewExif()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
