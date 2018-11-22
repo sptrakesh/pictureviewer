@@ -27,6 +27,7 @@ namespace com::sptci
 
   public slots:
     void openDirectory();
+    void newWindow();
     void play();
     void first();
     void previous();
@@ -40,6 +41,7 @@ namespace com::sptci
     void viewExif();
     void about();
     void aboutQt();
+    void quit();
 
   protected:
     void closeEvent(QCloseEvent* event) override;
@@ -72,6 +74,7 @@ namespace com::sptci
     void displayImage(const QString& file);
 
   private:
+    static int8_t WINDOW_INDEX;
     static const QString RECENT_FILES;
     static const QString INTERVAL;
     static const QString DISPLAY_SLEEP;
@@ -89,6 +92,7 @@ namespace com::sptci
     Ui::MainWindow* ui;
     TextWidget* intervalTextWidget;
     double scaleFactor = 1;
+    int8_t index;
     bool playing = false;
     bool initialised = false;
   };

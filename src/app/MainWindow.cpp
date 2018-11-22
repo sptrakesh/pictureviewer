@@ -5,6 +5,7 @@
 #include "ExifWindow.h"
 
 #include <QtCore/QDebug>
+#include <QtWidgets/QDesktopWidget>
 #include <QtCore/QFileInfo>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMimeData>
@@ -27,6 +28,7 @@ using com::sptci::MainWindow;
 
 Q_LOGGING_CATEGORY(MAIN_WINDOW, "com.sptci.MainWindow")
 
+int8_t MainWindow::WINDOW_INDEX = -1;
 const QString MainWindow::RECENT_FILES = "recentFiles";
 const QString MainWindow::INTERVAL = "interval";
 const QString MainWindow::DISPLAY_SLEEP = "displaySleep";
@@ -34,12 +36,17 @@ const QString MainWindow::DISPLAY_SLEEP = "displaySleep";
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent), ui(new Ui::MainWindow)
 {
+  index = ++WINDOW_INDEX;
+  qInfo(MAIN_WINDOW) << "Creating MainWindow with index: " << WINDOW_INDEX;
   ui->setupUi(this);
   ui->label->setBackgroundRole(QPalette::Base);
 
   createRecent();
   initInterval();
   initDisplaySleep();
+
+  const auto title = QString("%1 : %2").arg(windowTitle()).arg(index);
+  setWindowTitle(title);
 
   ui->statusbar->setStyleSheet("QStatusBar{color:black}");
   intervalTextWidget = new TextWidget(QString("%1 : %2s").
@@ -62,8 +69,9 @@ MainWindow::~MainWindow()
   });
 
 #if defined(Q_OS_MAC)
-  if (QProcess::Running == caffeinate.state())
+  if (index == 0 && QProcess::Running == caffeinate.state())
   {
+    qInfo(MAIN_WINDOW) << "Killing caffeinate from MainWindow with index: " << WINDOW_INDEX;
     caffeinate.kill();
   }
 #endif
@@ -144,6 +152,24 @@ void MainWindow::openDirectory()
   processDirectory(fileName);
 }
 
+void MainWindow::newWindow()
+{
+  auto w = new MainWindow(this);
+
+  const auto desktop = qApp->desktop();
+  const auto dg = desktop->availableGeometry();
+  const auto cwg = geometry();
+  auto x = cwg.left();
+  auto y = cwg.top();
+
+  auto wg = w->geometry();
+  wg.moveLeft(((x + 50) > dg.bottomRight().x()) ? 25 : x + 50);
+  wg.moveTop((( y + 50 ) > dg.bottom()) ? 25 : y + 50);
+
+  w->setGeometry(wg);
+  w->show();
+}
+
 void MainWindow::play()
 {
   ui->actionPlay->setEnabled(true);
@@ -204,7 +230,7 @@ void MainWindow::displaySleep()
     qInfo(MAIN_WINDOW()) << "Setting displaySleep preference to " << flag;
   }
 
-  if (flag)
+  if (flag && index == 0)
   {
 #if defined(Q_OS_MAC)
     if (QProcess::Running == caffeinate.state())
@@ -216,7 +242,7 @@ void MainWindow::displaySleep()
     SetThreadExecutionState(ES_CONTINUOUS);
 #endif
   }
-  else
+  else if (index == 0)
   {
 #if defined(Q_OS_MAC)
     qDebug(MAIN_WINDOW()) << "Starting caffeinate process";
@@ -319,6 +345,12 @@ void MainWindow::about()
 void MainWindow::aboutQt()
 {
   qApp->aboutQt();
+}
+
+void MainWindow::quit()
+{
+  if (index) qobject_cast<QMainWindow*>(parent())->close();
+  else close();
 }
 
 void MainWindow::positionTextWidget()
@@ -451,6 +483,7 @@ void MainWindow::processDirectory(const QString& filename)
   connect(this, &MainWindow::scanStop, scanner, &DirectoryScanner::stop);
   connect(scanner, &DirectoryScanner::file, this, &MainWindow::addFile);
   connect(scanner, &DirectoryScanner::finished, this, &MainWindow::scanFinished);
+  connect(scanner, &DirectoryScanner::finished, thread, &QThread::quit);
   threads.append(thread);
   thread->start();
 
