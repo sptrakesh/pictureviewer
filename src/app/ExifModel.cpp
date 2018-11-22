@@ -33,7 +33,8 @@ void ExifModel::readData()
       reinterpret_cast<unsigned char*>(const_cast<char *>(data.data())),
       static_cast<uint>(data.size())))
   {
-    const auto error = QString("Error parsing EXIF from JPEG: %1").arg(code);
+    const auto error = QString("Error parsing EXIF from JPEG: %1 for file: %s").
+        arg(code).arg(file);
     qDebug(EXIF_MODEL) << error;
     switch (code)
     {

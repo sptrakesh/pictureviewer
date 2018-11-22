@@ -39,17 +39,23 @@ void DirectoryScanner::scan()
 
     const auto path = iter.next();
     if (iter.fileInfo().isDir()) continue;
-    if (iter.fileInfo().fileName().contains("thumb")) continue;
-    if (iter.fileInfo().fileName().endsWith(".plist")) continue;
-    if (iter.fileInfo().fileName().endsWith(".db")) continue;
-    if (iter.fileInfo().fileName().endsWith(".html")) continue;
-    if (iter.fileInfo().fileName().endsWith(".htm")) continue;
-    if (iter.fileInfo().fileName().endsWith(".css")) continue;
-    if (iter.fileInfo().fileName().endsWith(".js")) continue;
-    if (iter.fileInfo().fileName().endsWith(".orig")) continue;
-    if (iter.fileInfo().fileName().endsWith(".bak")) continue;
-    if (iter.fileInfo().fileName().startsWith("_")) continue;
-    if (iter.fileInfo().fileName().startsWith(".")) continue;
+    const auto fileName = iter.fileInfo().fileName();
+    if (fileName.contains("thumb")) continue;
+    if (fileName.endsWith(".plist")) continue;
+    if (fileName.endsWith(".db")) continue;
+    if (fileName.endsWith(".html")) continue;
+    if (fileName.endsWith(".htm")) continue;
+    if (fileName.endsWith(".css")) continue;
+    if (fileName.endsWith(".js")) continue;
+    if (fileName.endsWith(".orig")) continue;
+    if (fileName.endsWith(".bak")) continue;
+    if (fileName.endsWith(".lock")) continue;
+    if (fileName.startsWith("_")) continue;
+    if (fileName.startsWith(".")) continue;
+    if (directory.endsWith(".photoslibrary") && path.contains("derivative")) continue;
+    if (directory.endsWith(".photoslibrary") && fileName.contains("facetile_")) continue;
+    if (directory.endsWith(".photoslibrary") && fileName.contains("jpegvideocomplement_")) continue;
+    if (directory.endsWith(".photoslibrary") && fileName.endsWith(".data")) continue;
 
     const auto bytes = QImageReader::imageFormat(path);
     if (!bytes.isEmpty())
