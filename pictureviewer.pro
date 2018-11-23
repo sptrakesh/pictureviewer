@@ -47,7 +47,8 @@ HEADERS  += \
     src/app/FileList.h \
     src/app/TextWidget.h \
     src/app/ExifModel.h \
-    src/app/ExifWindow.h
+    src/app/ExifWindow.h \
+    src/app/Watermark.h
 
 SOURCES += \
     src/main.cpp \
@@ -58,11 +59,13 @@ SOURCES += \
     src/app/FileList.cpp \
     src/app/TextWidget.cpp \
     src/app/ExifModel.cpp \
-    src/app/ExifWindow.cpp
+    src/app/ExifWindow.cpp \
+    src/app/Watermark.cpp
 
 FORMS    += \
     src/app/InfoViewer.ui \
     src/app/MainWindow.ui \
-    src/app/ExifWindow.ui
+    src/app/ExifWindow.ui \
+    src/app/Watermark.ui
 
 RESOURCES += resources/resources.qrc

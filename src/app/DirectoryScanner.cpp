@@ -8,7 +8,7 @@
 
 using com::sptci::DirectoryScanner;
 
-Q_LOGGING_CATEGORY(DIRECTORY_SCANNER, "com.sptci.DirectoryScanner")
+Q_LOGGING_CATEGORY(DIRECTORY_SCANNER, "com::sptci::DirectoryScanner")
 
 DirectoryScanner::DirectoryScanner(const QString directory, QObject* parent) :
     QObject(parent), directory(directory) {}

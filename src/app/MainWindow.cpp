@@ -3,6 +3,7 @@
 #include "DirectoryScanner.h"
 #include "InfoViewer.h"
 #include "ExifWindow.h"
+#include "Watermark.h"
 
 #include <QtCore/QDebug>
 #include <QtWidgets/QDesktopWidget>
@@ -26,7 +27,7 @@
 
 using com::sptci::MainWindow;
 
-Q_LOGGING_CATEGORY(MAIN_WINDOW, "com.sptci.MainWindow")
+Q_LOGGING_CATEGORY(MAIN_WINDOW, "com::sptci::MainWindow")
 
 int8_t MainWindow::WINDOW_INDEX = -1;
 const QString MainWindow::RECENT_FILES = "recentFiles";
@@ -174,26 +175,8 @@ void MainWindow::play()
 {
   ui->actionPlay->setEnabled(true);
 
-  if (playing)
-  {
-    QIcon icon( ":/images/Play.png" );
-    ui->actionPlay->setIcon(icon);
-    ui->actionPlay->setText("Play");
-    timer.stop();
-    ui->actionFirst->setEnabled(true);
-    ui->actionPrevious->setEnabled(true);
-    ui->actionNext->setEnabled(true);
-  }
-  else
-  {
-    QIcon icon( ":/images/Pause.png" );
-    ui->actionPlay->setIcon(icon);
-    ui->actionPlay->setText("Pause");
-    ui->actionFirst->setEnabled(false);
-    ui->actionPrevious->setEnabled(false);
-    ui->actionNext->setEnabled(false);
-    timer.start();
-  }
+  if (playing) pause();
+  else playback();
 
   playing = !playing;
 }
@@ -257,6 +240,7 @@ void MainWindow::displaySleep()
 
 void MainWindow::showFile()
 {
+  if (files.currentIndex() < 0) return;
   const auto filePath = files.current();
 
 #if defined(Q_OS_MAC)
@@ -279,9 +263,10 @@ void MainWindow::showFile()
 
 void MainWindow::removeFile()
 {
+  if (files.currentIndex() < 0) return;
   const auto status = playing;
 
-  if (status) play();
+  if (status) pause();
 
   const auto file = files.current();
   auto message = QString("%1\n%2%3%4").
@@ -303,7 +288,7 @@ void MainWindow::removeFile()
     }
   }
 
-  if (status) play();
+  if (status) playback();
 }
 
 void MainWindow::setIndex(int index)
@@ -332,9 +317,29 @@ void MainWindow::setInterval(int interval)
 
 void MainWindow::viewExif()
 {
+  if (files.currentIndex() < 0) return;
+
+  const auto flag = playing;
+  if (playing) pause();
+
   const auto file = files.current();
   auto window = new ExifWindow(file, this);
   window->show();
+
+  if (flag) playback();
+}
+
+void MainWindow::watermark()
+{
+  if (files.currentIndex() < 0) return;
+
+  const auto flag = playing;
+  if (playing) pause();
+
+  auto w = new com::sptci::Watermark(files.current(), this);
+  w->show();
+
+  if (flag) playback();
 }
 
 void MainWindow::about()
@@ -488,7 +493,7 @@ void MainWindow::processDirectory(const QString& filename)
   thread->start();
 
   emit scan();
-  play();
+  if (!playing) play();
 }
 
 void MainWindow::addRecent(const QString& fileName)
@@ -583,4 +588,26 @@ void MainWindow::displayImage(const QString& file)
       arg( files.currentIndex() + 1 ).
       arg( files.count() ) );
   ui->indexSlider->setValue(files.currentIndex());
+}
+
+void MainWindow::playback()
+{
+  QIcon icon( ":/images/Pause.png" );
+  ui->actionPlay->setIcon(icon);
+  ui->actionPlay->setText("Pause");
+  ui->actionFirst->setEnabled(false);
+  ui->actionPrevious->setEnabled(false);
+  ui->actionNext->setEnabled(false);
+  timer.start();
+}
+
+void MainWindow::pause()
+{
+  QIcon icon( ":/images/Play.png" );
+  ui->actionPlay->setIcon(icon);
+  ui->actionPlay->setText("Play");
+  timer.stop();
+  ui->actionFirst->setEnabled(true);
+  ui->actionPrevious->setEnabled(true);
+  ui->actionNext->setEnabled(true);
 }

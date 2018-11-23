@@ -39,6 +39,7 @@ namespace com::sptci
     void setIndex(int index);
     void setInterval(int interval);
     void viewExif();
+    void watermark();
     void about();
     void aboutQt();
     void quit();
@@ -72,6 +73,8 @@ namespace com::sptci
     void updateRecent();
     void showImageAt(int index);
     void displayImage(const QString& file);
+    void playback();
+    void pause();
 
   private:
     static int8_t WINDOW_INDEX;
