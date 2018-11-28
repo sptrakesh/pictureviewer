@@ -29,9 +29,10 @@ namespace com::sptci
     void displayImage();
     void displayImage(const QImage& image);
     QString getText();
-    std::tuple<int, int> textCoordinates(const QImage& image, QPaintDevice* device);
     void overlay();
     void burnIn();
+    void renderWatermark(QImage* image);
+    std::tuple<int, int> textCoordinates(const QImage& image, QPaintDevice* device);
     void saveFile(const QString& fileName);
 
   private:

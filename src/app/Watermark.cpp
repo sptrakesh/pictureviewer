@@ -73,6 +73,7 @@ void Watermark::preview()
   switch (ui->mode->currentIndex())
   {
     case 0:
+      clear();
       burnIn();
       burnIn();
       break;
@@ -165,65 +166,6 @@ QString Watermark::getText()
       ui->text->placeholderText() : ui->text->text();
 }
 
-std::tuple<int, int> Watermark::textCoordinates(const QImage& image, QPaintDevice* device)
-{
-  auto font = ui->fontComboBox->currentFont();
-  font.setPointSize(ui->fontSize->value());
-
-  const QFontMetrics fm(font, device);
-  const auto text = getText();
-
-  auto boundingRect = fm.boundingRect(text);
-  boundingRect = fm.boundingRect(boundingRect, 0, text);
-
-#if defined(Q_OS_MAC)
-  //boundingRect.setWidth(static_cast<int>(1.5 * boundingRect.width()));
-  //boundingRect.setHeight(static_cast<int>(1.5 * boundingRect.height()));
-#endif
-
-  const auto textWidthInPixels = boundingRect.width();
-  const auto textHeightInPixels = boundingRect.height();
-
-  int posX = 0;
-  int posY = 0;
-
-  switch (ui->position->currentIndex())
-  {
-    case 0: // top
-      posY = textHeightInPixels + 10;
-      break;
-    case 1: // middle
-      posY = image.height()/2 - textHeightInPixels/2;
-      //posY = ui->label->height()/2 - textHeightInPixels/2;
-      break;
-    case 2: // bottom
-      posY = image.height() - 10;
-      //posY = ui->label->height() - 10;
-      break;
-  }
-
-  switch (ui->alignment->currentIndex())
-  {
-    case 0: // left
-      posX = 10;
-      break;
-    case 1: // centre
-      posX = image.width()/2 - textWidthInPixels/2;
-      //posX = ui->label->width()/2 - textWidthInPixels/2;
-      break;
-    case 2: // right
-      posX = image.width() - (textWidthInPixels + 10);
-      //posX = ui->label->width() - (textWidthInPixels + 10);
-      break;
-  }
-
-  qInfo(WATERMARK) << "Image dimensions: (" << image.width() <<
-      "x" << image.height() << "); text position: (" <<
-      posX << "x" << posY << "); font dimensions: (" <<
-      textWidthInPixels << "x" << textHeightInPixels << ")";
-  return {posX, posY};
-}
-
 void Watermark::overlay()
 {
   QImageReader reader(file);
@@ -231,25 +173,7 @@ void Watermark::overlay()
   auto image = reader.read();
   if (image.isNull()) return;
 
-  const auto text = getText();
-  qDebug(WATERMARK) << "Watermark text: " << text;
-
-  auto font = ui->fontComboBox->currentFont();
-  auto fontSize = ui->fontSize->value();
-  font.setPointSize(fontSize);
-
-  QPainter painter(&image);
-  const auto& [posX, posY] = textCoordinates(image, painter.device());
-  qInfo(WATERMARK) << "Drawing text at: " << posX << "," << posY;
-
-  painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-  painter.setBackgroundMode(Qt::OpaqueMode);
-
-  painter.setPen(fontColour);
-  painter.setBackground(QBrush(backgroundColour));
-  painter.setFont(font);
-  painter.drawText(posX, posY, text);
-
+  renderWatermark(&image);
   displayImage(image);
 }
 
@@ -258,44 +182,19 @@ void Watermark::burnIn()
   QImageReader reader(file);
   reader.setAutoTransform(true);
   auto image = reader.read();
-
   if (image.isNull()) return;
 
   QImage mark(image.width(), image.height(), QImage::Format_RGB32);
-  QPainter painter(&mark);
-  painter.fillRect(0, 0, mark.width(), mark.height(), backgroundColour);
+  renderWatermark(&mark);
 
-  auto ft = ui->fontComboBox->currentFont();
-  ft.setPointSize(ui->fontSize->value());
-  auto pen = painter.pen();
-  pen.setColor(fontColour);
-  painter.setPen(pen);
-  painter.setFont(ft);
-
-  auto flags = Qt::AlignCenter;
-  switch (ui->alignment->currentIndex())
-  {
-    case 0:
-      flags = Qt::AlignLeft;
-      break;
-    case 1:
-      flags = Qt::AlignCenter;
-      break;
-    case 2:
-      flags = Qt::AlignRight;
-      break;
-  }
-
-  painter.drawText(0, 0, mark.width(), mark.height(), flags, getText());
-
-  QRgb rgbSrc,rgbMark;
-  int r,g,b;
+  QRgb rgbSrc, rgbMark;
+  int r, g, b;
   float alpha = 1 - (ui->textOpacity->value() / 255.0f);
   float beta = 1 - alpha;
 
-  for(int x = 0; x < mark.width(); x++)
+  for(int x = 0; x < mark.width(); ++x)
   {
-    for(int y = 0; y < mark.height(); y++)
+    for(int y = 0; y < mark.height(); ++y)
     {
       rgbSrc = image.pixel(x, y);
       rgbMark = mark.pixel(x, y);
@@ -313,6 +212,74 @@ void Watermark::burnIn()
   }
 
   displayImage(image);
+}
+
+void Watermark::renderWatermark(QImage* image)
+{
+  auto font = ui->fontComboBox->currentFont();
+  font.setPointSize(ui->fontSize->value());
+
+  QPainter painter(image);
+  const auto& [posX, posY] = textCoordinates(*image, painter.device());
+  qInfo(WATERMARK) << "Drawing text at: " << posX << "," << posY;
+
+  painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+  painter.setBackgroundMode(Qt::OpaqueMode);
+
+  painter.setPen(fontColour);
+  painter.setBackground(QBrush(backgroundColour));
+  painter.setFont(font);
+  painter.drawText(posX, posY, getText());
+}
+
+std::tuple<int, int> Watermark::textCoordinates(const QImage& image, QPaintDevice* device)
+{
+  auto font = ui->fontComboBox->currentFont();
+  font.setPointSize(ui->fontSize->value());
+
+  const QFontMetrics fm(font, device);
+  const auto text = getText();
+
+  auto boundingRect = fm.boundingRect(text);
+  boundingRect = fm.boundingRect(boundingRect, 0, text);
+
+  const auto textWidthInPixels = boundingRect.width();
+  const auto textHeightInPixels = boundingRect.height();
+
+  int posX = 0;
+  int posY = 0;
+
+  switch (ui->position->currentIndex())
+  {
+    case 0: // top
+      posY = textHeightInPixels + 10;
+      break;
+    case 1: // middle
+      posY = image.height()/2 - textHeightInPixels/2;
+      break;
+    case 2: // bottom
+      posY = image.height() - 10;
+      break;
+  }
+
+  switch (ui->alignment->currentIndex())
+  {
+    case 0: // left
+      posX = 10;
+      break;
+    case 1: // centre
+      posX = image.width()/2 - textWidthInPixels/2;
+      break;
+    case 2: // right
+      posX = image.width() - (textWidthInPixels + 10);
+      break;
+  }
+
+  qDebug(WATERMARK) << "Image dimensions: (" << image.width() <<
+      "x" << image.height() << "); text position: (" <<
+      posX << "x" << posY << "); font dimensions: (" <<
+      textWidthInPixels << "x" << textHeightInPixels << ")";
+  return {posX, posY};
 }
 
 void Watermark::saveFile(const QString& fileName)
