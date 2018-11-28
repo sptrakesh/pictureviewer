@@ -79,7 +79,17 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QFontComboBox" name="fontComboBox"/>
+          <widget class="QFontComboBox" name="fontComboBox">
+           <property name="fontFilters">
+            <set>QFontComboBox::MonospacedFonts|QFontComboBox::ProportionalFonts|QFontComboBox::ScalableFonts</set>
+           </property>
+           <property name="currentFont">
+            <font>
+             <family>Abadi MT Condensed Extra Bold</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label">
@@ -198,6 +208,27 @@
            <property name="maximum">
             <number>255</number>
            </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Mode</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QComboBox" name="mode">
+           <item>
+            <property name="text">
+             <string>Burned in</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Overlay</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
@@ -321,6 +352,22 @@
     <hint type="sourcelabel">
      <x>861</x>
      <y>239</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>539</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveAs</sender>
+   <signal>clicked()</signal>
+   <receiver>com::sptci::Watermark</receiver>
+   <slot>saveAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>747</x>
+     <y>689</y>
     </hint>
     <hint type="destinationlabel">
      <x>539</x>

@@ -22,15 +22,17 @@ namespace com::sptci
     void selectBackgroundColour();
     void clear();
     void preview();
+    void saveAs();
 
   private:
     void setForeground();
     void displayImage();
     void displayImage(const QImage& image);
     QString getText();
-    std::tuple<int, int> textCoordinates(const QImage& image);
+    std::tuple<int, int> textCoordinates(const QImage& image, QPaintDevice* device);
     void overlay();
     void burnIn();
+    void saveFile(const QString& fileName);
 
   private:
     const QString file;
