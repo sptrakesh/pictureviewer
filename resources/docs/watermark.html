@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="chrome=1" /><!-- Enables IE to use Chrome's rendering engine if installed -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="description" content="Picture player application" />
+        <title>Picture Player | Sans Pareil Technologies, Inc.</title>
+    </head>
+    <body bgcolor="black">
+    <div id="container">
+        <div id="midContainer">
+            <div id="contentContainer"><!-- Start main content wrapper -->
+                <div id="content" style="color:white;"><!-- Start content -->
+                  <h2>Watermarking</h2>
+                  <div>
+                  Very simple interface for rendering some very basic
+                  watermark text over an image.  Use the position and
+                  alignment drop-downs to specify the location of the
+                  watermark text.  Use the font and background colour and
+                  opacity properties to control how the text is
+                  displayed.  The font size is automatically corrected
+                  while rendering the watermark to make the text fit
+                  within the width of the image.
+                  </div>
+                  <h3>Single file</h3>
+                  <div>
+                  While viewing images using the player window, use the
+                  <em>Tools->Watermark</em> menu to display the watermarking
+                  controls window.  Set up the font and background as desired,
+                  and use the <em>Preview</em> button to see how the text
+                  is displayed.  Use the <em>Save as...</em> button to
+                  select the destination folder/file where the watermarked
+                  image is to be saved.
+                  </div>
+                  <div>
+                  <strong>Warning:</strong> If you specify an existing file,
+                  it will be over-written by the new watermarked image.  A
+                  warning dialogue window will be displayed asking for your
+                  confirmation before over-writing the file.
+                  </div>
+                  <h3>Multiple files</h3>
+                  <div>
+                  Set up the text as above, and use the <em>In directory...</em>
+                  button to apply the watermark to all files in the parent
+                  directory of the current image being displayed in the
+                  watermark window.
+                  </div>
+                  <div>
+                  Use the file dialogue displayed to select the destination
+                  folder where the watermarked images are to be saved.
+                  If files exist in the destination directory with the same
+                  names as the source files, the new output files will generate
+                  unique names using the common <em>filename (1..n).ext</em>
+                  strategy.
+                  </div>
+                </div><!-- End content -->
+            </div><!-- End main content wrapper -->
+        </div>
+    </div><!-- End container -->
+    </body>
+</html>
