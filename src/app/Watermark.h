@@ -1,8 +1,10 @@
 #ifndef COM_SPTCI_WATERMARK_H
 #define COM_SPTCI_WATERMARK_H
 
+#include "WatermarkSpec.h"
+#include <QtCore/QThread>
 #include <QtWidgets/QWidget>
-#include <tuple>
+#include <QtWidgets/QProgressDialog>
 
 namespace com::sptci
 {
@@ -17,22 +19,29 @@ namespace com::sptci
     explicit Watermark(const QString& file, QWidget* parent = nullptr);
     ~Watermark();
 
+  signals:
+    void startWatermarking();
+
   public slots:
     void selectFontColour();
     void selectBackgroundColour();
     void clear();
     void preview();
     void saveAs();
+    void allInDirectory();
+    void updateProgress(int index, QString file);
+
+  private slots:
+    void progressCancelled();
 
   private:
+    QString picturesDirectory();
+    WatermarkSpecPtr createSpec();
     void setForeground();
     void displayImage();
     void displayImage(const QImage& image);
     QString getText();
     void overlay();
-    void burnIn();
-    void renderWatermark(QImage* image);
-    std::tuple<int, int> textCoordinates(const QImage& image, QPaintDevice* device);
     void saveFile(const QString& fileName);
 
   private:
@@ -40,6 +49,8 @@ namespace com::sptci
     QColor fontColour;
     QColor backgroundColour;
     Ui::Watermark *ui;
+    QThread* thread = nullptr;
+    QProgressDialog *progress = nullptr;
   };
 
 } // namespace com::sptci

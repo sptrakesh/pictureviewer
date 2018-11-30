@@ -94,8 +94,6 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event)
 
 void MainWindow::dropEvent(QDropEvent* event)
 {
-  using com::sptci::DirectoryScanner;
-
   for (const auto& url : event->mimeData()->urls())
   {
     const auto fileName = url.toLocalFile();

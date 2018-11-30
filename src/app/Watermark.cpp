@@ -1,16 +1,19 @@
 #include "Watermark.h"
 #include "ui_Watermark.h"
+#include "WatermarkEngine.h"
+#include "WatermarkDirectory.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QThread>
 #include <QtGui/QImageReader>
-#include <QtGui/QPainter>
 #include <QtWidgets/QColorDialog>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
 using com::sptci::Watermark;
+using com::sptci::WatermarkSpecPtr;
 
 Q_LOGGING_CATEGORY(WATERMARK, "com::sptci::Watermark")
 
@@ -29,12 +32,19 @@ Watermark::Watermark(const QString& file, QWidget *parent) :
 
 Watermark::~Watermark()
 {
+  if (thread)
+  {
+    thread->quit();
+    thread->wait(3000);
+    thread->deleteLater();
+  }
+
   delete ui;
 }
 
 void Watermark::selectFontColour()
 {
-  const auto colour = QColorDialog::getColor(Qt::black, this, "Font Colour");
+  const auto colour = QColorDialog::getColor(Qt::black, this, tr("Font Colour"));
   if (!colour.isValid()) return;
   fontColour.setNamedColor(colour.name());
   fontColour.setAlpha(ui->textOpacity->value());
@@ -69,28 +79,14 @@ void Watermark::preview()
 {
   fontColour.setAlpha(ui->textOpacity->value());
   backgroundColour.setAlpha(ui->backgroundOpacity->value());
-
-  switch (ui->mode->currentIndex())
-  {
-    case 0:
-      clear();
-      burnIn();
-      burnIn();
-      break;
-    case 1:
-      overlay();
-      break;
-  }
+  overlay();
 }
 
 void Watermark::saveAs()
 {
   QFileInfo fi(file);
 
-  const auto picturesLocations =
-    QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-  const auto directory = picturesLocations.isEmpty() ?
-    QDir::currentPath() : picturesLocations.last();
+  const auto directory = picturesDirectory();
   const auto fn = QString("%1/%2").arg(directory).arg(fi.fileName());
 
   QString fileName = QFileDialog::getSaveFileName(this,
@@ -117,6 +113,74 @@ void Watermark::saveAs()
   }
 
   saveFile(fileName);
+}
+
+void Watermark::allInDirectory()
+{
+  QFileInfo fi(file);
+  const auto directory = picturesDirectory();
+
+  const auto dir = QFileDialog::getExistingDirectory(this,
+      tr("Select Output Folder"),
+      directory,
+      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (dir.isEmpty()) return;
+
+  auto process = new WatermarkDirectory(fi.absoluteDir(), QDir(dir), createSpec());
+  auto thread = new QThread;
+  process->moveToThread(thread);
+  connect(thread, &QThread::finished, process, &QObject::deleteLater);
+  connect(this, &Watermark::startWatermarking, process, &WatermarkDirectory::run);
+  connect(process, &WatermarkDirectory::progress, this, &Watermark::updateProgress);
+  connect(process, &WatermarkDirectory::finished, thread, &QThread::quit);
+
+  if (progress) delete progress;
+  progress = new QProgressDialog(tr("Watermarking files..."),
+    "Abort Process", 0, static_cast<int>(fi.absoluteDir().count()), this);
+  connect(progress, &QProgressDialog::canceled, process, &WatermarkDirectory::stop);
+  connect(progress, &QProgressDialog::canceled, this, &Watermark::progressCancelled);
+
+  thread->start();
+  emit startWatermarking();
+}
+
+void Watermark::updateProgress(int index, QString file)
+{
+  if (!progress)
+  {
+    qWarning(WATERMARK) << "No progress dialogue to update";
+    return;
+  }
+
+  progress->setValue(index);
+  qInfo(WATERMARK) << "Saved watermark file " << file;
+}
+
+void Watermark::progressCancelled()
+{
+  progress->hide();
+  delete progress;
+  progress = nullptr;
+}
+
+QString Watermark::picturesDirectory()
+{
+  const auto picturesLocations =
+    QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+  return picturesLocations.isEmpty() ?
+    QDir::homePath() : picturesLocations.last();
+}
+
+WatermarkSpecPtr Watermark::createSpec()
+{
+  return std::make_unique<WatermarkSpec>(
+    WatermarkSpec{
+      getText(), fontColour, ui->fontComboBox->currentFont(),
+      backgroundColour, ui->fontSize->value(),
+      ui->textOpacity->value(), ui->backgroundOpacity->value(),
+      ui->position->currentIndex(), ui->alignment->currentIndex()
+  });
 }
 
 void Watermark::setForeground()
@@ -157,6 +221,7 @@ void Watermark::displayImage()
 void Watermark::displayImage(const QImage& image)
 {
   auto pixmap = QPixmap::fromImage(image);
+  pixmap = pixmap.scaled(ui->imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
   ui->imageLabel->setPixmap(pixmap);
 }
 
@@ -168,118 +233,10 @@ QString Watermark::getText()
 
 void Watermark::overlay()
 {
-  QImageReader reader(file);
-  reader.setAutoTransform(true);
-  auto image = reader.read();
-  if (image.isNull()) return;
-
-  renderWatermark(&image);
+  auto spec = createSpec();
+  WatermarkEngine engine(spec.get(), this);
+  const auto image = engine.overlay(file);
   displayImage(image);
-}
-
-void Watermark::burnIn()
-{
-  QImageReader reader(file);
-  reader.setAutoTransform(true);
-  auto image = reader.read();
-  if (image.isNull()) return;
-
-  QImage mark(image.width(), image.height(), QImage::Format_RGB32);
-  renderWatermark(&mark);
-
-  QRgb rgbSrc, rgbMark;
-  int r, g, b;
-  float alpha = 1 - (ui->textOpacity->value() / 255.0f);
-  float beta = 1 - alpha;
-
-  for(int x = 0; x < mark.width(); ++x)
-  {
-    for(int y = 0; y < mark.height(); ++y)
-    {
-      rgbSrc = image.pixel(x, y);
-      rgbMark = mark.pixel(x, y);
-
-      r = int(qRed(rgbSrc) * alpha + qRed(rgbMark) * beta);
-      g = int(qGreen(rgbSrc) * alpha + qGreen(rgbMark) * beta);
-      b = int(qBlue(rgbSrc) * alpha + qBlue(rgbMark) * beta);
-
-      r = (0 <= r && r <= 255) ? r : 0;
-      g = (0 <= g && g <= 255) ? g : 0;
-      b = (0 <= b && b <= 255) ? b : 0;
-
-      image.setPixel(x, y, qRgb(r, g, b));
-    }
-  }
-
-  displayImage(image);
-}
-
-void Watermark::renderWatermark(QImage* image)
-{
-  auto font = ui->fontComboBox->currentFont();
-  font.setPointSize(ui->fontSize->value());
-
-  QPainter painter(image);
-  const auto& [posX, posY] = textCoordinates(*image, painter.device());
-  qInfo(WATERMARK) << "Drawing text at: " << posX << "," << posY;
-
-  painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-  painter.setBackgroundMode(Qt::OpaqueMode);
-
-  painter.setPen(fontColour);
-  painter.setBackground(QBrush(backgroundColour));
-  painter.setFont(font);
-  painter.drawText(posX, posY, getText());
-}
-
-std::tuple<int, int> Watermark::textCoordinates(const QImage& image, QPaintDevice* device)
-{
-  auto font = ui->fontComboBox->currentFont();
-  font.setPointSize(ui->fontSize->value());
-
-  const QFontMetrics fm(font, device);
-  const auto text = getText();
-
-  auto boundingRect = fm.boundingRect(text);
-  boundingRect = fm.boundingRect(boundingRect, 0, text);
-
-  const auto textWidthInPixels = boundingRect.width();
-  const auto textHeightInPixels = boundingRect.height();
-
-  int posX = 0;
-  int posY = 0;
-
-  switch (ui->position->currentIndex())
-  {
-    case 0: // top
-      posY = textHeightInPixels + 10;
-      break;
-    case 1: // middle
-      posY = image.height()/2 - textHeightInPixels/2;
-      break;
-    case 2: // bottom
-      posY = image.height() - 10;
-      break;
-  }
-
-  switch (ui->alignment->currentIndex())
-  {
-    case 0: // left
-      posX = 10;
-      break;
-    case 1: // centre
-      posX = image.width()/2 - textWidthInPixels/2;
-      break;
-    case 2: // right
-      posX = image.width() - (textWidthInPixels + 10);
-      break;
-  }
-
-  qDebug(WATERMARK) << "Image dimensions: (" << image.width() <<
-      "x" << image.height() << "); text position: (" <<
-      posX << "x" << posY << "); font dimensions: (" <<
-      textWidthInPixels << "x" << textHeightInPixels << ")";
-  return {posX, posY};
 }
 
 void Watermark::saveFile(const QString& fileName)

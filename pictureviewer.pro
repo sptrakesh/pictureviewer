@@ -48,7 +48,10 @@ HEADERS  += \
     src/app/TextWidget.h \
     src/app/ExifModel.h \
     src/app/ExifWindow.h \
-    src/app/Watermark.h
+    src/app/Watermark.h \
+    src/app/WatermarkEngine.h \
+    src/app/WatermarkSpec.h \
+    src/app/WatermarkDirectory.h
 
 SOURCES += \
     src/main.cpp \
@@ -60,7 +63,9 @@ SOURCES += \
     src/app/TextWidget.cpp \
     src/app/ExifModel.cpp \
     src/app/ExifWindow.cpp \
-    src/app/Watermark.cpp
+    src/app/Watermark.cpp \
+    src/app/WatermarkEngine.cpp \
+    src/app/WatermarkDirectory.cpp
 
 FORMS    += \
     src/app/InfoViewer.ui \
