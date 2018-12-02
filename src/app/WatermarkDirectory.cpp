@@ -6,6 +6,7 @@
 #include <QtCore/QLoggingCategory>
 
 using com::sptci::WatermarkDirectory;
+using com::sptci::WatermarkSpecPtr;
 
 Q_LOGGING_CATEGORY(WATERMARK_DIRECTORY, "com::sptci::WatermarkDirectory")
 

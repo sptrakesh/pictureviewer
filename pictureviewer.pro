@@ -3,9 +3,6 @@ QT += core gui widgets
 TARGET = PictureViewer
 TEMPLATE = app
 
-CONFIG += c++1z sdk_no_version_check 
-QMAKE_CXXFLAGS = -std=c++17
-
 CONFIG(debug, debug|release) {
   DESTDIR = build/debug
 }
@@ -20,6 +17,8 @@ RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.u
 
 macx {
+  CONFIG += c++1z sdk_no_version_check
+  QMAKE_CXXFLAGS = -std=c++17
   QMAKE_INFO_PLIST = resources/Info.plist
   ICON = resources/images/Icon.icns
   QMAKE_CFLAGS += -gdwarf-2
@@ -32,6 +31,7 @@ win32 {
   DEFINES += NOMINMAX WIN32 _WINDOWS QCE_BUILD
   QMAKE_CFLAGS += /D_CRT_SECURE_NO_WARNINGS /DSUPPORT_UTF8 /MP
   QMAKE_CXXFLAGS = $$QMAKE_CFLAGS
+  QMAKE_CXXFLAGS += /std:c++latest
   RC_FILE = resources/winicon.rc
 
   LIBS += -lAdvapi32 -lWs2_32 -lIphlpapi

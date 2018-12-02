@@ -198,12 +198,12 @@ void Watermark::setForeground()
 
   auto pal = ui->fontColour->palette();
   pal.setColor(QPalette::Button, fontColour);
-  palette.setColor(QPalette::Text, Qt::white);
+  pal.setColor(QPalette::Text, Qt::white);
   ui->fontColour->setPalette(pal);
 
   pal = ui->backgroundColour->palette();
   pal.setColor(QPalette::Button, backgroundColour);
-  palette.setColor(QPalette::Text, Qt::white);
+  pal.setColor(QPalette::Text, Qt::white);
   ui->backgroundColour->setPalette(pal);
 }
 
