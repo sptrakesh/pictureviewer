@@ -6,15 +6,16 @@
 #include "Watermark.h"
 
 #include <QtCore/QDebug>
-#include <QtWidgets/QDesktopWidget>
 #include <QtCore/QFileInfo>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMimeData>
+#include <QtCore/QProcess>
 #include <QtCore/QSettings>
 #include <QtCore/QStandardPaths>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QImageReader>
+#include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
@@ -22,7 +23,7 @@
 #include <iterator>
 
 #if defined(Q_OS_WIN)
-#include <winbase.h>
+#include <Windows.h>
 #endif
 
 using com::sptci::MainWindow;
