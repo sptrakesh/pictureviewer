@@ -3,10 +3,12 @@
 #include "functions.h"
 #include "MainWindow.h"
 #include "PaperSizeModel.h"
+#include "PdfEngine.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QtCore/QLoggingCategory>
+#include <QtCore/QMap>
 #include <QtGui/QImage>
 #include <QtGui/QImageReader>
 #include <QtGui/QPainter>
@@ -36,6 +38,13 @@ PdfMaker::PdfMaker(const QString& file, QWidget* parent) :
 
 PdfMaker::~PdfMaker()
 {
+  if (thread)
+  {
+    thread->quit();
+    thread->wait(3000);
+    thread->deleteLater();
+  }
+
   delete ui;
 }
 
@@ -71,7 +80,35 @@ void PdfMaker::saveAs()
   }
 #endif
 
+  ui->saveAs->setEnabled(false);
   save(fileName);
+}
+
+void PdfMaker::updateProgress(int index, int total, QString file)
+{
+  if (!progress)
+  {
+    qWarning(PDF_MAKER) << "No progress dialogue to update";
+    return;
+  }
+
+  progress->setValue(index);
+  progress->setLabelText(QString("Creating PDF... - (%1/%2)").arg(index).arg(total));
+  qInfo(PDF_MAKER) << "Added file " << file;
+}
+
+void PdfMaker::progressCancelled()
+{
+  progress->hide();
+  delete progress;
+  progress = nullptr;
+  ui->saveAs->setEnabled(true);
+}
+
+void PdfMaker::finished()
+{
+  qInfo(PDF_MAKER) << "Saved PDF " << dest;
+  close();
 }
 
 void PdfMaker::save(const QString& destination)
@@ -79,90 +116,77 @@ void PdfMaker::save(const QString& destination)
   const auto selected = ui->paperSize->currentIndex();
   const auto index = ui->paperSize->model()->index(selected, 1);
   const auto data = ui->paperSize->model()->data(index);
-  const auto value = static_cast<QPagedPaintDevice::PageSize>(data.toInt());
-
-  QPdfWriter writer(destination);
-  writer.setPageSize(value);
-  QPainter painter(&writer);
-
-  const auto dimension = dimensions(
-    {data.toInt(), writer.logicalDpiX(), writer.logicalDpiY()});
-  const auto& [width, height] = dimension;
-  qDebug(PDF_MAKER) << "PDF page size: " << width << "x: " << height <<
-    " file: " << file;
+  raise();
 
   switch (ui->file->currentIndex())
   {
     case 0: // File when pdf window was displayed
-      addFile(&painter, dimension, file);
+      saveFile(destination);
       break;
     case 1: // All files loaded
-      const MainWindow* mw = dynamic_cast<MainWindow*>(parent());
-      if (!mw)
-      {
-        qWarning(PDF_MAKER) << "Parent object not instance of com::sptci::MainWindow!";
-        return;
-      }
-
-      auto addPage = false;
-      std::for_each(mw->cbegin(), mw->cend(),
-        [this, &painter, &dimension, &writer, &addPage](const QString& fileName) {
-          if (addPage) writer.newPage();
-          addFile(&painter, dimension, fileName);
-          addPage = true;
-        });
+      saveAll(destination);
       break;
   }
+}
+
+void PdfMaker::saveFile(const QString& destination)
+{
+  const auto selected = ui->paperSize->currentIndex();
+  const auto index = ui->paperSize->model()->index(selected, 1);
+  const auto data = ui->paperSize->model()->data(index);
+
+  auto engine = PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination));
+  engine.create(file);
 
   qInfo(PDF_MAKER) << "Saved PDF " << destination;
   close();
 }
 
-void PdfMaker::addFile(QPainter* painter, const Dimension& dimension,
-    const QString& fileName)
+void PdfMaker::saveAll(const QString& destination)
 {
-  QImageReader reader(fileName);
-  reader.setAutoTransform(true);
+  dest = destination;
+  const auto list = files();
+  if (list.isEmpty()) return;
 
-  const auto& [width, height] = dimension;
-  const auto image = reader.read().scaled(
-    width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  const auto selected = ui->paperSize->currentIndex();
+  const auto index = ui->paperSize->model()->index(selected, 1);
+  const auto data = ui->paperSize->model()->data(index);
 
-  const auto x = (image.width() < width ) ?
-    static_cast<int>((width - image.width())/2.0) : 0;
-  const auto y = (image.height() < height ) ?
-    static_cast<int>((height - image.height())/2.0) : 0;
+  auto process = new PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination));
+  thread = new QThread(this);
+  process->moveToThread(thread);
 
-  painter->drawImage(QPoint(x, y), image);
+  connect(thread, &QThread::finished, process, &QObject::deleteLater);
+  connect(this, &PdfMaker::start, process, &PdfEngine::run);
+  connect(process, &PdfEngine::progress, this, &PdfMaker::updateProgress);
+  connect(process, &PdfEngine::finished, this, &PdfMaker::finished);
+  connect(process, &PdfEngine::finished, thread, &QThread::quit);
+
+  if (progress) delete progress;
+  progress = new QProgressDialog(tr("Creating PDF..."),
+    "Abort Process", 0, list.size(), this);
+  connect(progress, &QProgressDialog::canceled, process, &PdfEngine::stop);
+  connect(progress, &QProgressDialog::canceled, this, &PdfMaker::progressCancelled);
+
+  thread->start();
+  emit start(list);
 }
 
-auto PdfMaker::dimensions(const PdfMaker::DimParam& param) -> Dimension
+QList<QString> PdfMaker::files()
 {
-  const auto sid =  static_cast<QPageSize::PageSizeId>(param.sizeId);
+  QMap<QString,bool> map;
 
-  const auto definedSize = QPageSize::definitionSize(sid);
-  const auto definedUnits = QPageSize::definitionUnits(sid);
-
-  qDebug(PDF_MAKER) << "Defined size: " << definedSize << ", units: " << definedUnits;
-
-  auto toInch = [&definedUnits](double value) -> int
+  const MainWindow* mw = dynamic_cast<MainWindow*>(parent());
+  if (!mw)
   {
-    switch (definedUnits)
-    {
-      case QPageSize::Millimeter:
-        return static_cast<int>(value / 25.4);
-      case QPageSize::Point:
-        return static_cast<int>(value / 72.0);
-      case QPageSize::Inch:
-        return static_cast<int>(value);
-      case QPageSize::Pica:
-        return static_cast<int>(value * 6);
-      case QPageSize::Didot:
-        return static_cast<int>(value * 0.375 / 25.4);
-      case QPageSize::Cicero:
-        return static_cast<int>(value * 4.5 / 25.4);
-    }
-  };
+    qWarning(PDF_MAKER) << "Parent object not instance of com::sptci::MainWindow!";
+    return map.keys();
+  }
 
-  return {param.dpiX * toInch(definedSize.width()), param.dpiY * toInch(definedSize.height())};
+  std::for_each(mw->cbegin(), mw->cend(),
+    [&map](const QString& fileName) {
+      map.insert(fileName, false);
+    });
+
+  return map.keys();
 }

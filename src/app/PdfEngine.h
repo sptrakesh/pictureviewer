@@ -1,8 +1,12 @@
 #ifndef PDFENGINE_H
 #define PDFENGINE_H
 
+#include <QtCore/QList>
 #include <QtGui/QPainter>
+
+#include <mutex>
 #include <tuple>
+
 #include "PdfSpec.h"
 
 namespace com::sptci {
@@ -14,27 +18,26 @@ namespace com::sptci {
     explicit PdfEngine(PdfSpecPtr spec, QObject* parent = nullptr);
 
   signals:
-    void finished(const QString file);
+    void progress(int count, int total, QString file);
+    void finished();
 
   public slots:
     void create(const QString& file);
+    void run(const QList<QString>& files);
+    void stop();
 
   private:
-    struct DimParam
-    {
-      int sizeId;
-      int dpiX;
-      int dpiY;
-    };
-
     using Dimension = std::tuple<int,int>;
 
     void save(const QString& dest);
     void addFile(QPainter* painter, const Dimension& dimension, const QString& fileName);
-    Dimension dimensions(const DimParam& param);
+    Dimension dimensions(int dpiX, int dpiY);
+    void setAbort(bool abort);
 
   private:
+    std::mutex mutex;
     PdfSpecPtr spec;
+    bool abort = false;
   };
 
 } // namespace com::sptci

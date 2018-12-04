@@ -8,7 +8,7 @@ namespace com::sptci
 {
   struct PdfSpec
   {
-    const int fileMode;
+    PdfSpec(int ps, const QString& d) : paperSize(ps), destination(d) {}
     const int paperSize;
     const QString destination;
   };

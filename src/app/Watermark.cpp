@@ -128,7 +128,7 @@ void Watermark::allInDirectory()
   if (dir.isEmpty()) return;
 
   auto process = new WatermarkDirectory(fi.absoluteDir(), QDir(dir), createSpec());
-  auto thread = new QThread;
+  thread = new QThread(this);
   process->moveToThread(thread);
   connect(thread, &QThread::finished, process, &QObject::deleteLater);
   connect(this, &Watermark::startWatermarking, process, &WatermarkDirectory::run);

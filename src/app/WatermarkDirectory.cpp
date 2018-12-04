@@ -16,8 +16,6 @@ WatermarkDirectory::WatermarkDirectory(const QDir& inDir, const QDir& outDir,
 
 void WatermarkDirectory::run()
 {
-  using com::sptci::WatermarkEngine;
-
   QEventLoop loop;
 
   QDirIterator iter(inDir);

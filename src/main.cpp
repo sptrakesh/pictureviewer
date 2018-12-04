@@ -1,6 +1,7 @@
 #include "app/MainWindow.h"
 
 #include <QtCore/QDateTime>
+#include <QtCore/QList>
 #include <QtWidgets/QApplication>
 
 namespace com::sptci
@@ -52,6 +53,8 @@ int main( int argc, char *argv[] )
 {
   qInstallMessageHandler(com::sptci::formatMessage);
   setbuf(stdout, nullptr);
+
+  qRegisterMetaType<QList<QString>>();
 
   QApplication a( argc, argv );
   a.setOrganizationName( "Rakesh Vidyadharan" );

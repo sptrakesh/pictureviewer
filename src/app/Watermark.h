@@ -3,7 +3,6 @@
 
 #include "WatermarkSpec.h"
 #include <QtCore/QThread>
-#include <QtWidgets/QWidget>
 #include <QtWidgets/QProgressDialog>
 
 namespace com::sptci

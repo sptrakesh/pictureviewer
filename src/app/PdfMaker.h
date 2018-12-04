@@ -1,8 +1,9 @@
 #ifndef COM_SPTCI_PDFMAKER_H
 #define COM_SPTCI_PDFMAKER_H
 
-#include <QtWidgets/QWidget>
-#include <tuple>
+#include <QtCore/QList>
+#include <QtCore/QThread>
+#include <QtWidgets/QProgressDialog>
 
 namespace com::sptci {
 
@@ -16,26 +17,29 @@ namespace com::sptci {
     explicit PdfMaker(const QString& file, QWidget* parent = nullptr);
     ~PdfMaker();
 
+  signals:
+    void start(const QList<QString>& files);
+
   public slots:
     void saveAs();
 
+  private slots:
+    void updateProgress(int index, int total, QString file);
+    void progressCancelled();
+    void finished();
+
   private:
-    struct DimParam
-    {
-      int sizeId;
-      int dpiX;
-      int dpiY;
-    };
-
-    using Dimension = std::tuple<int,int>;
-
-    void save(const QString& dest);
-    void addFile(QPainter* painter, const Dimension& dimension, const QString& fileName);
-    Dimension dimensions(const DimParam& param);
+    void save(const QString& destination);
+    void saveFile(const QString& destination);
+    void saveAll(const QString& destination);
+    QList<QString> files();
 
   private:
     const QString file;
+    QString dest;
     Ui::PdfMaker* ui;
+    QThread* thread = nullptr;
+    QProgressDialog* progress = nullptr;
   };
 
 } // namespace com::sptci
