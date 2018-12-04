@@ -1,9 +1,11 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "functions.h"
 #include "DirectoryScanner.h"
 #include "InfoViewer.h"
 #include "ExifWindow.h"
 #include "Watermark.h"
+#include "PdfMaker.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
@@ -11,7 +13,6 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QProcess>
 #include <QtCore/QSettings>
-#include <QtCore/QStandardPaths>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QImageReader>
@@ -108,7 +109,11 @@ void MainWindow::dropEvent(QDropEvent* event)
     else if (file.isFile())
     {
       files.add(file.absoluteFilePath());
-      if (files.currentIndex() < 0) files.next();
+      if (files.currentIndex() < 0)
+      {
+        files.next();
+        enableMenu();
+      }
       displayImage(file.absoluteFilePath());
     }
     else
@@ -140,11 +145,7 @@ bool MainWindow::event(QEvent* event)
 
 void MainWindow::openDirectory()
 {
-  const auto picturesLocations =
-    QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-  const auto directory = picturesLocations.isEmpty() ?
-    QDir::currentPath() : picturesLocations.last();
-
+  const auto directory = com::sptci::picturesDirectory();
   const auto fileName = QFileDialog::getExistingDirectory(
         this, tr("Select Directory"), directory);
   if (fileName.isNull() || fileName.isEmpty()) return;
@@ -341,6 +342,19 @@ void MainWindow::watermark()
   if (flag) playback();
 }
 
+void MainWindow::createPdf()
+{
+  if (files.currentIndex() < 0) return;
+
+  const auto flag = playing;
+  if (playing) pause();
+
+  auto w = new com::sptci::PdfMaker(files.current(), this);
+  w->show();
+
+  if (flag) playback();
+}
+
 void MainWindow::about()
 {
   com::sptci::InfoViewer::showPage("player.html");
@@ -492,7 +506,11 @@ void MainWindow::processDirectory(const QString& filename)
   thread->start();
 
   emit scan();
-  if (!playing) play();
+  if (!playing)
+  {
+    enableMenu();
+    play();
+  }
 }
 
 void MainWindow::addRecent(const QString& fileName)
@@ -609,4 +627,12 @@ void MainWindow::pause()
   ui->actionFirst->setEnabled(true);
   ui->actionPrevious->setEnabled(true);
   ui->actionNext->setEnabled(true);
+}
+
+void MainWindow::enableMenu()
+{
+  ui->actionShow_File->setEnabled(true);
+  ui->actionWatermark->setEnabled(true);
+  ui->actionCreate_PDF->setEnabled(true);
+  ui->actionDelete_File->setEnabled(true);
 }

@@ -165,6 +165,7 @@
     <addaction name="actionShow_File"/>
     <addaction name="actionView_Exif"/>
     <addaction name="actionWatermark"/>
+    <addaction name="actionCreate_PDF"/>
     <addaction name="separator"/>
     <addaction name="actionDelete_File"/>
    </widget>
@@ -296,6 +297,9 @@
    </property>
   </action>
   <action name="actionShow_File">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Show File</string>
    </property>
@@ -304,6 +308,9 @@
    </property>
   </action>
   <action name="actionDelete_File">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Delete File</string>
    </property>
@@ -328,11 +335,22 @@
    </property>
   </action>
   <action name="actionWatermark">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Watermark</string>
    </property>
    <property name="toolTip">
     <string>Watermark file(s)</string>
+   </property>
+  </action>
+  <action name="actionCreate_PDF">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Create PDF</string>
    </property>
   </action>
  </widget>
@@ -617,6 +635,22 @@
    <signal>triggered()</signal>
    <receiver>com::sptci::MainWindow</receiver>
    <slot>watermark()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCreate_PDF</sender>
+   <signal>triggered()</signal>
+   <receiver>com::sptci::MainWindow</receiver>
+   <slot>createPdf()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

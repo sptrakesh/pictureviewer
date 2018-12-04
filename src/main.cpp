@@ -36,6 +36,15 @@ namespace com::sptci
         localMsg.constData(), context.file, context.line, context.function);
       break;
     }
+
+    /*
+QString txt = QString("%1 %2: %3 (%4)").arg(formattedTime, logLevelName, msg,  context.file);
+        QFile outFile(logFilePath);
+        outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+        QTextStream ts(&outFile);
+        ts << txt << endl;
+        outFile.close();
+     */
   }
 }
 

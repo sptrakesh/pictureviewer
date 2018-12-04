@@ -25,6 +25,9 @@ namespace com::sptci
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow() override;
 
+    FileList::Iterator cbegin() const { return files.cbegin(); }
+    FileList::Iterator cend() const { return files.cend(); }
+
   public slots:
     void openDirectory();
     void newWindow();
@@ -40,6 +43,7 @@ namespace com::sptci
     void setInterval(int interval);
     void viewExif();
     void watermark();
+    void createPdf();
     void about();
     void aboutQt();
     void quit();
@@ -75,6 +79,7 @@ namespace com::sptci
     void displayImage(const QString& file);
     void playback();
     void pause();
+    void enableMenu();
 
   private:
     static int8_t WINDOW_INDEX;

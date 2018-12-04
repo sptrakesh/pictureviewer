@@ -29,13 +29,12 @@ namespace com::sptci
     void preview();
     void saveAs();
     void allInDirectory();
-    void updateProgress(int index, QString file);
 
   private slots:
+    void updateProgress(int index, QString file);
     void progressCancelled();
 
   private:
-    QString picturesDirectory();
     WatermarkSpecPtr createSpec();
     void setForeground();
     void displayImage();

@@ -2,10 +2,10 @@
 #include "ui_Watermark.h"
 #include "WatermarkEngine.h"
 #include "WatermarkDirectory.h"
+#include "functions.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QLoggingCategory>
-#include <QtCore/QStandardPaths>
 #include <QtCore/QThread>
 #include <QtGui/QImageReader>
 #include <QtWidgets/QColorDialog>
@@ -86,7 +86,7 @@ void Watermark::saveAs()
 {
   QFileInfo fi(file);
 
-  const auto directory = picturesDirectory();
+  const auto directory = com::sptci::picturesDirectory();
   const auto fn = QString("%1/%2").arg(directory).arg(fi.fileName());
 
   QString fileName = QFileDialog::getSaveFileName(this,
@@ -118,7 +118,7 @@ void Watermark::saveAs()
 void Watermark::allInDirectory()
 {
   QFileInfo fi(file);
-  const auto directory = picturesDirectory();
+  const auto directory = com::sptci::picturesDirectory();
 
   const auto dir = QFileDialog::getExistingDirectory(this,
       tr("Select Output Folder"),
@@ -162,14 +162,6 @@ void Watermark::progressCancelled()
   progress->hide();
   delete progress;
   progress = nullptr;
-}
-
-QString Watermark::picturesDirectory()
-{
-  const auto picturesLocations =
-    QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-  return picturesLocations.isEmpty() ?
-    QDir::homePath() : picturesLocations.last();
 }
 
 WatermarkSpecPtr Watermark::createSpec()

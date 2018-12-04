@@ -10,6 +10,8 @@ namespace com::sptci
   {
     Q_OBJECT
   public:
+    using Iterator = QList<QString>::ConstIterator;
+
     explicit FileList(QObject* parent = nullptr);
 
     void add(const QString& file);
@@ -28,6 +30,9 @@ namespace com::sptci
 
     int count() const { return files.count(); }
     void clear() { files.clear(); }
+
+    Iterator cbegin() const { return files.cbegin(); }
+    Iterator cend() const { return files.cend(); }
 
   private:
     QList<QString> files;
