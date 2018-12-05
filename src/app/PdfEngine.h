@@ -31,6 +31,7 @@ namespace com::sptci {
     void save(const QString& dest);
     void addFile(QPainter* painter, const Dimension& dimension, const QString& fileName);
     Dimension dimensions(int dpiX, int dpiY);
+    bool getAbort();
     void setAbort(bool abort);
 
   private:

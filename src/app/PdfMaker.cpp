@@ -9,6 +9,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMap>
+#include <QtCore/QThread>
 #include <QtGui/QImage>
 #include <QtGui/QImageReader>
 #include <QtGui/QPainter>
@@ -38,18 +39,12 @@ PdfMaker::PdfMaker(const QString& file, QWidget* parent) :
 
 PdfMaker::~PdfMaker()
 {
-  if (thread)
-  {
-    thread->quit();
-    thread->wait(3000);
-    thread->deleteLater();
-  }
-
   delete ui;
 }
 
 void PdfMaker::saveAs()
 {
+  completed = true;
   QFileInfo fi(file);
 
   const auto directory = com::sptci::documentsDirectory();
@@ -101,16 +96,21 @@ void PdfMaker::updateProgress(int index, int total, QString file)
 void PdfMaker::progressCancelled()
 {
   progress->hide();
-  delete progress;
   progress = nullptr;
   ui->cancel->setEnabled(true);
   ui->saveAs->setEnabled(true);
+  completed = false;
+  raise();
 }
 
 void PdfMaker::finished()
 {
   qInfo(PDF_MAKER) << "Saved PDF " << dest;
-  close();
+  if (completed)
+  {
+    if (ui->showFile->isChecked()) com::sptci::showFile(dest);
+    close();
+  }
 }
 
 void PdfMaker::save(const QString& destination)
@@ -156,39 +156,60 @@ void PdfMaker::saveAll(const QString& destination)
   const auto data = ui->paperSize->model()->data(index);
 
   auto process = new PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination), list);
-  thread = new QThread(this);
+  auto thread = new QThread;
   process->moveToThread(thread);
 
-  connect(thread, &QThread::finished, process, &QObject::deleteLater);
   connect(thread, &QThread::started, process, &PdfEngine::run);
   connect(process, &PdfEngine::progress, this, &PdfMaker::updateProgress);
   connect(process, &PdfEngine::finished, this, &PdfMaker::finished);
   connect(process, &PdfEngine::finished, thread, &QThread::quit);
+  connect(process, &PdfEngine::finished, process, &PdfEngine::deleteLater);
+  connect(thread, &QThread::finished, process, &QObject::deleteLater);
+  connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
-  if (progress) delete progress;
-  progress = new QProgressDialog(tr("Creating PDF..."),
-    "Abort Process", 0, list.size(), this);
-  connect(progress, &QProgressDialog::canceled, process, &PdfEngine::stop);
-  connect(progress, &QProgressDialog::canceled, this, &PdfMaker::progressCancelled);
+  progress = std::make_unique<QProgressDialog>(tr("Creating PDF..."),
+    "Abort Process", 0, list.size());
+  connect(progress.get(), &QProgressDialog::canceled, process, &PdfEngine::stop);
+  connect(progress.get(), &QProgressDialog::canceled, this, &PdfMaker::progressCancelled);
 
   thread->start();
 }
 
-QList<QString> PdfMaker::files()
+QStringList PdfMaker::files()
 {
-  QMap<QString,bool> map;
+  auto sorted = [this]() {
+    QMap<QString,bool> map;
 
-  const MainWindow* mw = dynamic_cast<MainWindow*>(parent());
-  if (!mw)
-  {
-    qWarning(PDF_MAKER) << "Parent object not instance of com::sptci::MainWindow!";
+    const MainWindow* mw = dynamic_cast<MainWindow*>(parent());
+    if (!mw)
+    {
+      qWarning(PDF_MAKER) << "Parent object not instance of com::sptci::MainWindow!";
+      return map.keys();
+    }
+
+    std::for_each(mw->cbegin(), mw->cend(),
+      [&map](const QString& fileName) {
+        map.insert(fileName, false);
+      });
+
     return map.keys();
-  }
+  };
 
-  std::for_each(mw->cbegin(), mw->cend(),
-    [&map](const QString& fileName) {
-      map.insert(fileName, false);
-    });
+  auto unsorted = [this]() {
+    QStringList list;
 
-  return map.keys();
+    const MainWindow* mw = dynamic_cast<MainWindow*>(parent());
+    if (!mw)
+    {
+      qWarning(PDF_MAKER) << "Parent object not instance of com::sptci::MainWindow!";
+      return list;
+    }
+
+    std::for_each(mw->cbegin(), mw->cend(),
+      [&list](const QString& fileName) { list.append(fileName); });
+
+    return list;
+  };
+
+  return (ui->sortFiles->isChecked()) ? sorted() : unsorted();
 }

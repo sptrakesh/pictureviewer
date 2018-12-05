@@ -1,9 +1,10 @@
 #ifndef COM_SPTCI_PDFMAKER_H
 #define COM_SPTCI_PDFMAKER_H
 
-#include <QtCore/QList>
-#include <QtCore/QThread>
+#include <QtCore/QStringList>
 #include <QtWidgets/QProgressDialog>
+
+#include <memory>
 
 namespace com::sptci {
 
@@ -29,14 +30,14 @@ namespace com::sptci {
     void save(const QString& destination);
     void saveFile(const QString& destination);
     void saveAll(const QString& destination);
-    QList<QString> files();
+    QStringList files();
 
   private:
     const QString file;
     QString dest;
     Ui::PdfMaker* ui;
-    QThread* thread = nullptr;
-    QProgressDialog* progress = nullptr;
+    std::unique_ptr<QProgressDialog> progress = nullptr;
+    bool completed = true;
   };
 
 } // namespace com::sptci

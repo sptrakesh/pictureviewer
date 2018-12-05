@@ -36,7 +36,7 @@ void PdfEngine::run()
   bool addPage = false;
   for (const auto& file : files)
   {
-    if (abort) return;
+    if (getAbort()) break;
     if (addPage) writer.newPage();
     addFile(&painter, dimension, file);
     addPage = true;
@@ -100,6 +100,12 @@ auto PdfEngine::dimensions(int dpiX, int dpiY) -> Dimension
   };
 
   return {dpiX * toInch(definedSize.width()), dpiY * toInch(definedSize.height())};
+}
+
+bool PdfEngine::getAbort()
+{
+  std::lock_guard<std::mutex> guard(mutex);
+  return abort;
 }
 
 void PdfEngine::setAbort(bool flag)

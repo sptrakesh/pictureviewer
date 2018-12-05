@@ -2,8 +2,9 @@
 #define COM_SPTCI_WATERMARK_H
 
 #include "WatermarkSpec.h"
-#include <QtCore/QThread>
 #include <QtWidgets/QProgressDialog>
+
+#include <memory>
 
 namespace com::sptci
 {
@@ -17,9 +18,6 @@ namespace com::sptci
   public:
     explicit Watermark(const QString& file, QWidget* parent = nullptr);
     ~Watermark();
-
-  signals:
-    void startWatermarking();
 
   public slots:
     void selectFontColour();
@@ -47,8 +45,7 @@ namespace com::sptci
     QColor fontColour;
     QColor backgroundColour;
     Ui::Watermark *ui;
-    QThread* thread = nullptr;
-    QProgressDialog *progress = nullptr;
+    std::unique_ptr<QProgressDialog> progress = nullptr;
   };
 
 } // namespace com::sptci

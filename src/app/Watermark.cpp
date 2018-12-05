@@ -32,13 +32,6 @@ Watermark::Watermark(const QString& file, QWidget *parent) :
 
 Watermark::~Watermark()
 {
-  if (thread)
-  {
-    thread->quit();
-    thread->wait(3000);
-    thread->deleteLater();
-  }
-
   delete ui;
 }
 
@@ -128,21 +121,20 @@ void Watermark::allInDirectory()
   if (dir.isEmpty()) return;
 
   auto process = new WatermarkDirectory(fi.absoluteDir(), QDir(dir), createSpec());
-  thread = new QThread(this);
+  auto thread = new QThread;
   process->moveToThread(thread);
-  connect(thread, &QThread::finished, process, &QObject::deleteLater);
-  connect(this, &Watermark::startWatermarking, process, &WatermarkDirectory::run);
+  connect(thread, &QThread::started, process, &WatermarkDirectory::run);
   connect(process, &WatermarkDirectory::progress, this, &Watermark::updateProgress);
   connect(process, &WatermarkDirectory::finished, thread, &QThread::quit);
+  connect(process, &WatermarkDirectory::finished, process, &WatermarkDirectory::deleteLater);
+  connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
-  if (progress) delete progress;
-  progress = new QProgressDialog(tr("Watermarking files..."),
-    "Abort Process", 0, static_cast<int>(fi.absoluteDir().count()), this);
-  connect(progress, &QProgressDialog::canceled, process, &WatermarkDirectory::stop);
-  connect(progress, &QProgressDialog::canceled, this, &Watermark::progressCancelled);
+  progress = std::make_unique<QProgressDialog>(tr("Watermarking files..."),
+    "Abort Process", 0, static_cast<int>(fi.absoluteDir().count()));
+  connect(progress.get(), &QProgressDialog::canceled, process, &WatermarkDirectory::stop);
+  connect(progress.get(), &QProgressDialog::canceled, this, &Watermark::progressCancelled);
 
   thread->start();
-  emit startWatermarking();
 }
 
 void Watermark::updateProgress(int index, QString file)
@@ -160,8 +152,8 @@ void Watermark::updateProgress(int index, QString file)
 void Watermark::progressCancelled()
 {
   progress->hide();
-  delete progress;
   progress = nullptr;
+  raise();
 }
 
 WatermarkSpecPtr Watermark::createSpec()

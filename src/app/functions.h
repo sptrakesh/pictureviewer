@@ -2,7 +2,9 @@
 #define FUNCTIONS_H
 
 #include <QtCore/QDir>
+#include <QtCore/QProcess>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QStringList>
 
 namespace com::sptci
 {
@@ -20,6 +22,26 @@ namespace com::sptci
       QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation);
     return documentsLocations.isEmpty() ?
       QDir::homePath() : documentsLocations.last();
+  }
+
+  inline void showFile(const QString& filePath)
+  {
+#if defined(Q_OS_MAC)
+    QStringList args;
+    args << "-e";
+    args << "tell application \"Finder\"";
+    args << "-e";
+    args << "activate";
+    args << "-e";
+    args << "select POSIX file \"" + filePath + "\"";
+    args << "-e";
+    args << "end tell";
+    QProcess::startDetached( "osascript", args );
+#elif defined(Q_OS_WIN)
+    QStringList args;
+    args << "/select," << QDir::toNativeSeparators(filePath);
+    QProcess::startDetached("explorer", args);
+#endif
   }
 }
 

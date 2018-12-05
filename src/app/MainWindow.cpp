@@ -242,23 +242,7 @@ void MainWindow::showFile()
 {
   if (files.currentIndex() < 0) return;
   const auto filePath = files.current();
-
-#if defined(Q_OS_MAC)
-  QStringList args;
-  args << "-e";
-  args << "tell application \"Finder\"";
-  args << "-e";
-  args << "activate";
-  args << "-e";
-  args << "select POSIX file \"" + filePath + "\"";
-  args << "-e";
-  args << "end tell";
-  QProcess::startDetached( "osascript", args );
-#elif defined(Q_OS_WIN)
-  QStringList args;
-  args << "/select," << QDir::toNativeSeparators(filePath);
-  QProcess::startDetached("explorer", args);
-#endif
+  com::sptci::showFile(filePath);
 }
 
 void MainWindow::removeFile()
