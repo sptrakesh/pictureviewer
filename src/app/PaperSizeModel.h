@@ -24,6 +24,11 @@ namespace com::sptci {
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+    QPageSize::PageSizeId sizeId(int row) const
+    {
+      return std::get<0>(items.at(static_cast<std::size_t>(row)));
+    }
+
     int systemSize() { return static_cast<int>(systemSizeIndex); }
 
   private:

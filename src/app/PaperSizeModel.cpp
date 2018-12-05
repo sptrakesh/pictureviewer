@@ -33,12 +33,7 @@ int PaperSizeModel::rowCount(const QModelIndex &parent) const
 QVariant PaperSizeModel::data(const QModelIndex &index, int role) const
 {
   if (!index.isValid() || Qt::DisplayRole != role) return QVariant();
-
-  switch ( index.column() )
-  {
-    case 1: return std::get<0>(items.at(static_cast<std::size_t>(index.row())));
-    default: return std::get<1>(items.at(static_cast<std::size_t>(index.row())));
-  }
+  return std::get<1>(items.at(static_cast<std::size_t>(index.row())));
 }
 
 void PaperSizeModel::populate()

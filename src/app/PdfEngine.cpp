@@ -3,6 +3,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QEventLoop>
 #include <QtCore/QLoggingCategory>
+#include <QtCore/QTemporaryFile>
 #include <QtGui/QImageReader>
 #include <QtGui/QPainter>
 #include <QtGui/QPageSize>
@@ -26,6 +27,9 @@ void PdfEngine::run()
 
   QPdfWriter writer(spec->destination);
   writer.setPageSize(value);
+  if (!spec->title.isEmpty()) writer.setTitle(spec->title);
+  if (!spec->creator.isEmpty()) writer.setCreator(spec->creator);
+
   QPainter painter(&writer);
 
   const auto dimension = dimensions(writer.logicalDpiX(), writer.logicalDpiY());
@@ -60,13 +64,25 @@ void PdfEngine::addFile(QPainter* painter, const Dimension& dimension,
   reader.setAutoTransform(true);
 
   const auto& [width, height] = dimension;
-  const auto pixmap = QPixmap::fromImageReader(&reader).scaled(
+  auto pixmap = QPixmap::fromImageReader(&reader).scaled(
     width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
   const auto x = (pixmap.width() < width ) ?
     static_cast<int>((width - pixmap.width())/2.0) : 0;
   const auto y = (pixmap.height() < height ) ?
     static_cast<int>((height - pixmap.height())/2.0) : 0;
+
+  if (spec->compression != 100)
+  {
+    qInfo(PDF_ENGINE) << "Compressing file to JPEG quality " << spec->compression;
+    QTemporaryFile tf;
+    if (tf.open())
+    {
+      pixmap.save(tf.fileName(), "JPEG", spec->compression);
+      QImageReader r(tf.fileName());
+      pixmap = QPixmap::fromImageReader(&r);
+    }
+  }
 
   painter->drawPixmap(QPoint(x, y), pixmap);
 }

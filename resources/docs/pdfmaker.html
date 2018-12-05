@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="chrome=1" /><!-- Enables IE to use Chrome's rendering engine if installed -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="description" content="Picture player application" />
+        <title>Picture Player | Sans Pareil Technologies, Inc.</title>
+    </head>
+    <body bgcolor="black">
+    <div id="container">
+        <div id="midContainer">
+            <div id="contentContainer"><!-- Start main content wrapper -->
+                <div id="content" style="color:white;"><!-- Start content -->
+                <h2>Create PDF's</h2>
+                <div>
+                  You can create PDF files out of the current displayed
+                  file, or all the files that are loaded in the player
+                  window.
+                </div>
+                <h2>Options</h2>
+                <h3>Source File</h3>
+                <div>
+                  Use the <em>Source File</em> option to specify whether
+                  you with to create a PDF with just the current displayed
+                  file (default option), or with all the files loaded in
+                  the player window.
+                </div>
+                <h3>Paper Size</h3>
+                </div>
+                  Select the page/paper size you wish for the output PDF.  Smaller
+                  page size will usually lead to smaller final file size.
+                  For instance, using our test folder with about 35 images,
+                  the resulting PDF size was about 500Mb for A4 paper,
+                  while the size was reduced to 148Mb for A6 paper.
+                <div>
+                <h3>Title</h3>
+                <div>
+                  The title to set in PDF file metadata.  No default value
+                  will be set in the output file if not specified.
+                </div>
+                <h3>Creator</h3>
+                <div>
+                  The creator to set in PDF file metadata.  The default
+                  value will be the Qt version used to build this application.
+                </div>
+                <h3>Sort Files</h3>
+                <div>
+                  Relevant only when creating a PDF with all the files
+                  loaded in the player window.  Indicates whether the
+                  file name should be sorted in alphabetical order to
+                  generate the output PDF.  The default file listing has
+                  no deterministic order if generated from a directory or
+                  directories.  If you have dragged and dropped individual
+                  files in the desired order into the player window, then
+                  you should not let the application sort the files (uncheck
+                  the checkbox), and it will honour the order you specified.
+                </div>
+                <h3>Show File</h3>
+                <div>
+                  Check the <em>Show File</em> check-box to display the
+                  generated PDF file in the native file manager for your
+                  platform (Finder on Mac OS X, and Explorer on Windows).
+                </div>
+                <h3>Compression</h3>
+                <div>
+                  JPEG compression to apply to the scaled image before
+                  drawing on the output PDF page(s).  The default of
+                  <em>100</em> will use no compression.  You can experiment
+                  with various values and balance output filesize vs
+                  quality of the output.
+                </div>
+                <div>
+                  <strong>Note:</strong> Enabling compression slows down
+                  the PDF generation process quite a bit.
+                </div>
+                <h3>Limitation</h3>
+                <div>
+                  PDF files generated from images are very large.  This
+                  is especially the case when scaling smaller images to
+                  file an entire page.  The upscaling from pixels to fill
+                  in platform native DPI leads to most images bloating
+                  in size.  For instance, while testing a folder with
+                  about 35 images with a combined size of 11Mb, the resulting
+                  PDF generated was about 500Mb.
+                </div>
+                </div><!-- End content -->
+            </div><!-- End main content wrapper -->
+        </div>
+    </div><!-- End container -->
+    </body>
+</html>

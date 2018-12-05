@@ -8,9 +8,15 @@ namespace com::sptci
 {
   struct PdfSpec
   {
-    PdfSpec(int ps, const QString& d) : paperSize(ps), destination(d) {}
-    const int paperSize;
+    PdfSpec(int paperSize, const QString& destination, const QString& title,
+      const QString& creator, int compression = 100) :
+        destination(destination), title(title),
+        creator(creator), paperSize(paperSize), compression(compression)  {}
     const QString destination;
+    const QString title;
+    const QString creator;
+    const int paperSize;
+    const int compression;
   };
 
   using PdfSpecPtr = std::unique_ptr<PdfSpec>;

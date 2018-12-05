@@ -89,7 +89,7 @@ void PdfMaker::updateProgress(int index, int total, QString file)
   }
 
   progress->setValue(index);
-  progress->setLabelText(QString("Creating PDF... - (%1/%2)").arg(index).arg(total));
+  progress->setLabelText(QString("Added page... - (%1/%2)").arg(index).arg(total));
   qInfo(PDF_MAKER) << "Added file " << file;
 }
 
@@ -134,11 +134,14 @@ void PdfMaker::save(const QString& destination)
 void PdfMaker::saveFile(const QString& destination)
 {
   const auto selected = ui->paperSize->currentIndex();
-  const auto index = ui->paperSize->model()->index(selected, 1);
-  const auto data = ui->paperSize->model()->data(index);
+  const auto model = dynamic_cast<PaperSizeModel*>(ui->paperSize->model());
+  const auto sizeId = model->sizeId(selected);
+  qDebug(PDF_MAKER) << "Paper size " << sizeId;
   const QStringList files(file);
 
-  auto engine = PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination), files);
+  auto engine = PdfEngine(std::make_unique<PdfSpec>(
+    sizeId, destination, ui->title->text(), ui->creator->text(),
+    ui->compression->value()), files);
   engine.run();
 
   qInfo(PDF_MAKER) << "Saved PDF " << destination;
@@ -152,10 +155,12 @@ void PdfMaker::saveAll(const QString& destination)
   if (list.isEmpty()) return;
 
   const auto selected = ui->paperSize->currentIndex();
-  const auto index = ui->paperSize->model()->index(selected, 1);
-  const auto data = ui->paperSize->model()->data(index);
+  const auto model = dynamic_cast<PaperSizeModel*>(ui->paperSize->model());
+  const auto sizeId = model->sizeId(selected);
 
-  auto process = new PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination), list);
+  auto process = new PdfEngine(std::make_unique<PdfSpec>(
+    sizeId, destination, ui->title->text(), ui->creator->text(),
+    ui->compression->value()), list);
   auto thread = new QThread;
   process->moveToThread(thread);
 
