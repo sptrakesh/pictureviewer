@@ -3,38 +3,21 @@
 #include <QtCore/QDebug>
 #include <QtCore/QEventLoop>
 #include <QtCore/QLoggingCategory>
-#include <QtGui/QImage>
 #include <QtGui/QImageReader>
 #include <QtGui/QPainter>
 #include <QtGui/QPageSize>
 #include <QtGui/QPdfWriter>
+#include <QtGui/QPixmap>
 
 using com::sptci::PdfEngine;
 using com::sptci::PdfSpecPtr;
 
 Q_LOGGING_CATEGORY(PDF_ENGINE, "com::sptci::PdfEngine")
 
-PdfEngine::PdfEngine(PdfSpecPtr spec, QObject* parent) :
-    QObject(parent), spec(std::move(spec)) {}
+PdfEngine::PdfEngine(PdfSpecPtr spec, const QStringList& files, QObject* parent) :
+    QObject(parent), files(files), spec(std::move(spec)) {}
 
-void PdfEngine::create(const QString& file)
-{
-  const auto value = static_cast<QPagedPaintDevice::PageSize>(spec->paperSize);
-
-  QPdfWriter writer(spec->destination);
-  writer.setPageSize(value);
-  QPainter painter(&writer);
-
-  const auto dimension = dimensions(writer.logicalDpiX(), writer.logicalDpiY());
-  const auto& [width, height] = dimension;
-  qDebug(PDF_ENGINE) << "PDF page size: " << width << "x: " << height <<
-    " file: " << file;
-
-  addFile(&painter, dimension, file);
-  qInfo(PDF_ENGINE) << "Saved PDF " << spec->destination;
-}
-
-void PdfEngine::run(const QList<QString>& files)
+void PdfEngine::run()
 {
   QEventLoop loop;
   int count = 0;
@@ -77,15 +60,15 @@ void PdfEngine::addFile(QPainter* painter, const Dimension& dimension,
   reader.setAutoTransform(true);
 
   const auto& [width, height] = dimension;
-  const auto image = reader.read().scaled(
+  const auto pixmap = QPixmap::fromImageReader(&reader).scaled(
     width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-  const auto x = (image.width() < width ) ?
-    static_cast<int>((width - image.width())/2.0) : 0;
-  const auto y = (image.height() < height ) ?
-    static_cast<int>((height - image.height())/2.0) : 0;
+  const auto x = (pixmap.width() < width ) ?
+    static_cast<int>((width - pixmap.width())/2.0) : 0;
+  const auto y = (pixmap.height() < height ) ?
+    static_cast<int>((height - pixmap.height())/2.0) : 0;
 
-  painter->drawImage(QPoint(x, y), image);
+  painter->drawPixmap(QPoint(x, y), pixmap);
 }
 
 auto PdfEngine::dimensions(int dpiX, int dpiY) -> Dimension

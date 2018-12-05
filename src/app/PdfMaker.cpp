@@ -80,6 +80,7 @@ void PdfMaker::saveAs()
   }
 #endif
 
+  ui->cancel->setEnabled(false);
   ui->saveAs->setEnabled(false);
   save(fileName);
 }
@@ -102,6 +103,7 @@ void PdfMaker::progressCancelled()
   progress->hide();
   delete progress;
   progress = nullptr;
+  ui->cancel->setEnabled(true);
   ui->saveAs->setEnabled(true);
 }
 
@@ -134,9 +136,10 @@ void PdfMaker::saveFile(const QString& destination)
   const auto selected = ui->paperSize->currentIndex();
   const auto index = ui->paperSize->model()->index(selected, 1);
   const auto data = ui->paperSize->model()->data(index);
+  const QStringList files(file);
 
-  auto engine = PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination));
-  engine.create(file);
+  auto engine = PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination), files);
+  engine.run();
 
   qInfo(PDF_MAKER) << "Saved PDF " << destination;
   close();
@@ -152,12 +155,12 @@ void PdfMaker::saveAll(const QString& destination)
   const auto index = ui->paperSize->model()->index(selected, 1);
   const auto data = ui->paperSize->model()->data(index);
 
-  auto process = new PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination));
+  auto process = new PdfEngine(std::make_unique<PdfSpec>(data.toInt(), destination), list);
   thread = new QThread(this);
   process->moveToThread(thread);
 
   connect(thread, &QThread::finished, process, &QObject::deleteLater);
-  connect(this, &PdfMaker::start, process, &PdfEngine::run);
+  connect(thread, &QThread::started, process, &PdfEngine::run);
   connect(process, &PdfEngine::progress, this, &PdfMaker::updateProgress);
   connect(process, &PdfEngine::finished, this, &PdfMaker::finished);
   connect(process, &PdfEngine::finished, thread, &QThread::quit);
@@ -169,7 +172,6 @@ void PdfMaker::saveAll(const QString& destination)
   connect(progress, &QProgressDialog::canceled, this, &PdfMaker::progressCancelled);
 
   thread->start();
-  emit start(list);
 }
 
 QList<QString> PdfMaker::files()

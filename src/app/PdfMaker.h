@@ -17,9 +17,6 @@ namespace com::sptci {
     explicit PdfMaker(const QString& file, QWidget* parent = nullptr);
     ~PdfMaker();
 
-  signals:
-    void start(const QList<QString>& files);
-
   public slots:
     void saveAs();
 

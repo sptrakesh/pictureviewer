@@ -1,7 +1,7 @@
 #ifndef PDFENGINE_H
 #define PDFENGINE_H
 
-#include <QtCore/QList>
+#include <QtCore/QStringList>
 #include <QtGui/QPainter>
 
 #include <mutex>
@@ -15,15 +15,14 @@ namespace com::sptci {
   {
     Q_OBJECT
   public:
-    explicit PdfEngine(PdfSpecPtr spec, QObject* parent = nullptr);
+    explicit PdfEngine(PdfSpecPtr spec, const QStringList& files, QObject* parent = nullptr);
 
   signals:
     void progress(int count, int total, QString file);
     void finished();
 
   public slots:
-    void create(const QString& file);
-    void run(const QList<QString>& files);
+    void run();
     void stop();
 
   private:
@@ -36,6 +35,7 @@ namespace com::sptci {
 
   private:
     std::mutex mutex;
+    QStringList files;
     PdfSpecPtr spec;
     bool abort = false;
   };
