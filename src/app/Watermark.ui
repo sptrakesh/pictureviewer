@@ -253,7 +253,7 @@
        <item>
         <widget class="QPushButton" name="applyAll">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>All files...</string>
@@ -370,6 +370,22 @@
     <hint type="destinationlabel">
      <x>539</x>
      <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>applyAll</sender>
+   <signal>clicked()</signal>
+   <receiver>com::sptci::Watermark</receiver>
+   <slot>allFiles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1184</x>
+     <y>694</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>686</x>
+     <y>361</y>
     </hint>
    </hints>
   </connection>

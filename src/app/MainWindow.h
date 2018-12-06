@@ -55,7 +55,6 @@ namespace com::sptci
     bool event(QEvent* event) override;
 
   signals:
-    void scan();
     void scanStop();
 
   private slots:

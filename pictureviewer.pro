@@ -51,12 +51,12 @@ HEADERS  += \
     src/app/Watermark.h \
     src/app/WatermarkEngine.h \
     src/app/WatermarkSpec.h \
-    src/app/WatermarkDirectory.h \
     src/app/PdfMaker.h \
     src/app/PaperSizeModel.h \
     src/app/functions.h \
     src/app/PdfEngine.h \
-    src/app/PdfSpec.h
+    src/app/PdfSpec.h \
+    src/app/WatermarkFiles.h
 
 SOURCES += \
     src/main.cpp \
@@ -70,10 +70,10 @@ SOURCES += \
     src/app/ExifWindow.cpp \
     src/app/Watermark.cpp \
     src/app/WatermarkEngine.cpp \
-    src/app/WatermarkDirectory.cpp \
     src/app/PdfMaker.cpp \
     src/app/PaperSizeModel.cpp \
-    src/app/PdfEngine.cpp
+    src/app/PdfEngine.cpp \
+    src/app/WatermarkFiles.cpp
 
 FORMS    += \
     src/app/InfoViewer.ui \

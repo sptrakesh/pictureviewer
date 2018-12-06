@@ -82,6 +82,10 @@ void PdfEngine::addFile(QPainter* painter, const Dimension& dimension,
       QImageReader r(tf.fileName());
       pixmap = QPixmap::fromImageReader(&r);
     }
+    else
+    {
+      qWarning(PDF_ENGINE) << "Unable to open temporary file " << tf.fileName();
+    }
   }
 
   painter->drawPixmap(QPoint(x, y), pixmap);

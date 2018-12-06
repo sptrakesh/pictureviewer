@@ -26,10 +26,12 @@ namespace com::sptci
     void preview();
     void saveAs();
     void allInDirectory();
+    void allFiles();
 
   private slots:
-    void updateProgress(int index, QString file);
+    void updateProgress(int index, int total, QString file);
     void progressCancelled();
+    void finished();
 
   private:
     WatermarkSpecPtr createSpec();
@@ -46,6 +48,7 @@ namespace com::sptci
     QColor backgroundColour;
     Ui::Watermark *ui;
     std::unique_ptr<QProgressDialog> progress = nullptr;
+    bool completed = true;
   };
 
 } // namespace com::sptci

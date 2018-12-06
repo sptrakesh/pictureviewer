@@ -1,7 +1,8 @@
 #include "Watermark.h"
 #include "ui_Watermark.h"
+#include "MainWindow.h"
 #include "WatermarkEngine.h"
-#include "WatermarkDirectory.h"
+#include "WatermarkFiles.h"
 #include "functions.h"
 
 #include <QtCore/QDebug>
@@ -113,6 +114,7 @@ void Watermark::saveAs()
 
 void Watermark::allInDirectory()
 {
+  completed = true;
   QFileInfo fi(file);
   const auto directory = com::sptci::picturesDirectory();
 
@@ -123,24 +125,57 @@ void Watermark::allInDirectory()
 
   if (dir.isEmpty()) return;
 
-  auto process = new WatermarkDirectory(fi.absoluteDir(), QDir(dir), createSpec());
+  auto process = new WatermarkFiles(fi.absoluteDir(), QDir(dir), createSpec());
   auto thread = new QThread;
   process->moveToThread(thread);
-  connect(thread, &QThread::started, process, &WatermarkDirectory::run);
-  connect(process, &WatermarkDirectory::progress, this, &Watermark::updateProgress);
-  connect(process, &WatermarkDirectory::finished, thread, &QThread::quit);
-  connect(process, &WatermarkDirectory::finished, process, &WatermarkDirectory::deleteLater);
+  connect(thread, &QThread::started, process, &WatermarkFiles::run);
+  connect(process, &WatermarkFiles::progress, this, &Watermark::updateProgress);
+  connect(process, &WatermarkFiles::finished, thread, &QThread::quit);
+  connect(process, &WatermarkFiles::finished, this, &Watermark::finished);
+  connect(process, &WatermarkFiles::finished, process, &WatermarkFiles::deleteLater);
   connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
   progress = std::make_unique<QProgressDialog>(tr("Watermarking files..."),
-    "Abort Process", 0, static_cast<int>(fi.absoluteDir().count()));
-  connect(progress.get(), &QProgressDialog::canceled, process, &WatermarkDirectory::stop);
+    "Abort Process", 0, process->size());
+  connect(progress.get(), &QProgressDialog::canceled, process, &WatermarkFiles::stop);
   connect(progress.get(), &QProgressDialog::canceled, this, &Watermark::progressCancelled);
 
   thread->start();
 }
 
-void Watermark::updateProgress(int index, QString file)
+void Watermark::allFiles()
+{
+  completed = true;
+  const auto directory = com::sptci::picturesDirectory();
+
+  const auto dir = QFileDialog::getExistingDirectory(this,
+      tr("Select Output Folder"),
+      directory,
+      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (dir.isEmpty()) return;
+
+  auto mw = dynamic_cast<MainWindow*>(parent());
+
+  auto process = new WatermarkFiles(mw->cbegin(), mw->cend(), QDir(dir), createSpec());
+  auto thread = new QThread;
+  process->moveToThread(thread);
+  connect(thread, &QThread::started, process, &WatermarkFiles::run);
+  connect(process, &WatermarkFiles::progress, this, &Watermark::updateProgress);
+  connect(process, &WatermarkFiles::finished, thread, &QThread::quit);
+  connect(process, &WatermarkFiles::finished, this, &Watermark::finished);
+  connect(thread, &QThread::finished, process, &WatermarkFiles::deleteLater);
+  connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+  progress = std::make_unique<QProgressDialog>(tr("Watermarking files..."),
+    "Abort Process", 0, process->size());
+  connect(progress.get(), &QProgressDialog::canceled, process, &WatermarkFiles::stop);
+  connect(progress.get(), &QProgressDialog::canceled, this, &Watermark::progressCancelled);
+
+  thread->start();
+}
+
+void Watermark::updateProgress(int index, int total, QString file)
 {
   if (!progress)
   {
@@ -149,14 +184,22 @@ void Watermark::updateProgress(int index, QString file)
   }
 
   progress->setValue(index);
-  qInfo(WATERMARK) << "Saved watermark file " << file;
+  progress->setLabelText(QString("Watermarked file... (%1/%2)").arg(index).arg(total));
+  qInfo(WATERMARK) << "Saved watermark file " << file <<
+    "(" << index << "/" << total << ")";
 }
 
 void Watermark::progressCancelled()
 {
+  completed = false;
   progress->hide();
   progress = nullptr;
   raise();
+}
+
+void Watermark::finished()
+{
+  if (completed) close();
 }
 
 WatermarkSpecPtr Watermark::createSpec()

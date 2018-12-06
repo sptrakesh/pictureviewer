@@ -307,7 +307,7 @@ void MainWindow::viewExif()
   if (playing) pause();
 
   const auto file = files.current();
-  auto window = new ExifWindow(file, this);
+  auto window = new ExifWindow(file);
   window->show();
 
   if (flag) playback();
@@ -480,8 +480,8 @@ void MainWindow::processDirectory(const QString& filename)
   auto scanner = new DirectoryScanner(file.absoluteFilePath());
   auto thread = new QThread;
   scanner->moveToThread(thread);
+  connect(thread, &QThread::started, scanner, &DirectoryScanner::scan);
   connect(thread, &QThread::finished, scanner, &QObject::deleteLater);
-  connect(this, &MainWindow::scan, scanner, &DirectoryScanner::scan);
   connect(this, &MainWindow::scanStop, scanner, &DirectoryScanner::stop);
   connect(scanner, &DirectoryScanner::file, this, &MainWindow::addFile);
   connect(scanner, &DirectoryScanner::finished, this, &MainWindow::scanFinished);
@@ -489,7 +489,6 @@ void MainWindow::processDirectory(const QString& filename)
   threads.append(thread);
   thread->start();
 
-  emit scan();
   if (!playing)
   {
     enableMenu();

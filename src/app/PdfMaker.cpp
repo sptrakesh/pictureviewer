@@ -155,7 +155,6 @@ void PdfMaker::saveAll(const QString& destination)
   connect(process, &PdfEngine::finished, this, &PdfMaker::finished);
   connect(process, &PdfEngine::finished, thread, &QThread::quit);
   connect(process, &PdfEngine::finished, process, &PdfEngine::deleteLater);
-  connect(thread, &QThread::finished, process, &QObject::deleteLater);
   connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
   progress = std::make_unique<QProgressDialog>(tr("Creating PDF..."),
