@@ -23,10 +23,10 @@ void PdfEngine::run()
   QEventLoop loop;
   int count = 0;
 
-  const auto value = static_cast<QPagedPaintDevice::PageSize>(spec->paperSize);
-
   QPdfWriter writer(spec->destination);
+  const auto value = static_cast<QPagedPaintDevice::PageSize>(spec->paperSize);
   writer.setPageSize(value);
+
   if (!spec->title.isEmpty()) writer.setTitle(spec->title);
   if (!spec->creator.isEmpty()) writer.setCreator(spec->creator);
 

@@ -22,7 +22,7 @@ void WatermarkDirectory::run()
   uint count = 0;
   while (iter.hasNext())
   {
-    if (abort)
+    if (getAbort())
     {
       qInfo(WATERMARK_DIRECTORY) << "Abort requested.  Bailing out after " <<
         count << " files out of " << inDir.count() << " files.";
@@ -61,6 +61,12 @@ void WatermarkDirectory::stop()
 {
   qInfo(WATERMARK_DIRECTORY) << "Stop requested";
   setAbort(true);
+}
+
+bool WatermarkDirectory::getAbort()
+{
+  std::lock_guard<std::mutex> guard(mutex);
+  return abort;
 }
 
 void WatermarkDirectory::setAbort(bool flag)

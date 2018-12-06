@@ -27,6 +27,7 @@ namespace com::sptci
     void stop();
 
   private:
+    bool getAbort();
     void setAbort(bool flag);
 
     QDir inDir;

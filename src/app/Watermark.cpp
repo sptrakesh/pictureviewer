@@ -22,10 +22,13 @@ Watermark::Watermark(const QString& file, QWidget *parent) :
     backgroundColour(Qt::transparent), ui(new Ui::Watermark)
 {
   ui->setupUi(this);
+  setWindowFlags(Qt::Window);
+  setAttribute(Qt::WA_DeleteOnClose);
+
   fontColour.setAlpha(ui->textOpacity->value());
   backgroundColour.setAlpha(ui->backgroundOpacity->value());
-  setWindowFlags(Qt::Window);
   setWindowTitle(QString("%1 - %2").arg(windowTitle()).arg(file));
+
   setForeground();
   displayImage();
 }

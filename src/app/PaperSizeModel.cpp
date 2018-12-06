@@ -73,7 +73,6 @@ void PaperSizeModel::populate()
   items.emplace_back(QPageSize::Legal, "Legal");
   items.emplace_back(QPageSize::Letter, "Letter");
   items.emplace_back(QPageSize::Tabloid, "Tabloid");
-  items.emplace_back(QPageSize::Custom, "Custom");
 
   items.emplace_back(QPageSize::A3Extra, "A3Extra");
   items.emplace_back(QPageSize::A4Extra, "A4Extra");

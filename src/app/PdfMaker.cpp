@@ -33,6 +33,7 @@ PdfMaker::PdfMaker(const QString& file, QWidget* parent) :
   ui->paperSize->setModel(model);
   ui->paperSize->setCurrentIndex(model->systemSize());
 
+  setAttribute(Qt::WA_DeleteOnClose);
   setWindowFlags(Qt::Window);
   setWindowTitle(QString("%1 - %2").arg(windowTitle()).arg(file));
 }
