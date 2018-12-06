@@ -113,6 +113,8 @@ auto PdfEngine::dimensions(int dpiX, int dpiY) -> Dimension
       case QPageSize::Cicero:
         return static_cast<int>(value * 4.5 / 25.4);
     }
+
+    return static_cast<int>(value);
   };
 
   return {dpiX * toInch(definedSize.width()), dpiY * toInch(definedSize.height())};

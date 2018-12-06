@@ -61,21 +61,6 @@ void PdfMaker::saveAs()
     return;
   }
 
-#if defined(Q_OS_WIN)
-  if (QFileInfo(fileName).exists())
-  {
-    const auto result = QMessageBox::question(this,
-        tr("Over-write file?"),
-        QString("File %1 exists").arg(fileName));
-
-    if (QMessageBox::Yes == result)
-    {
-      save(fileName);
-      return;
-    }
-  }
-#endif
-
   ui->cancel->setEnabled(false);
   ui->saveAs->setEnabled(false);
   save(fileName);
@@ -140,7 +125,7 @@ void PdfMaker::saveFile(const QString& destination)
   qDebug(PDF_MAKER) << "Paper size " << sizeId;
   const QStringList files(file);
 
-  auto engine = PdfEngine(std::make_unique<PdfSpec>(
+  PdfEngine engine(std::make_unique<PdfSpec>(
     sizeId, destination, ui->title->text(), ui->creator->text(),
     ui->compression->value()), files);
   engine.run();
