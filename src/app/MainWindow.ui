@@ -166,6 +166,7 @@
     <addaction name="actionView_Exif"/>
     <addaction name="actionWatermark"/>
     <addaction name="actionCreate_PDF"/>
+    <addaction name="actionCreate_Comic"/>
     <addaction name="separator"/>
     <addaction name="actionDelete_File"/>
    </widget>
@@ -351,6 +352,17 @@
    </property>
    <property name="text">
     <string>Create PDF</string>
+   </property>
+  </action>
+  <action name="actionCreate_Comic">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Create Comic</string>
+   </property>
+   <property name="toolTip">
+    <string>Create Comic Book Archive</string>
    </property>
   </action>
  </widget>
@@ -651,6 +663,22 @@
    <signal>triggered()</signal>
    <receiver>com::sptci::MainWindow</receiver>
    <slot>createPdf()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCreate_Comic</sender>
+   <signal>triggered()</signal>
+   <receiver>com::sptci::MainWindow</receiver>
+   <slot>createComic()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

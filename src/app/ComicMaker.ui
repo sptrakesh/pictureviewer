@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>com::sptci::ComicMaker</class>
+ <widget class="QWidget" name="com::sptci::ComicMaker">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Comic Book Maker</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Archive Type</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="archiveType">
+         <item>
+          <property name="text">
+           <string>RAR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ZIP</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>TAR</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>7Z</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ACE</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Show File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="showFiles">
+         <property name="text">
+          <string>Yes</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QPushButton" name="allFiles">
+         <property name="text">
+          <string>All files...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="inDirectory">
+         <property name="text">
+          <string>In directory...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>allFiles</sender>
+   <signal>clicked()</signal>
+   <receiver>com::sptci::ComicMaker</receiver>
+   <slot>allFiles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>105</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>inDirectory</sender>
+   <signal>clicked()</signal>
+   <receiver>com::sptci::ComicMaker</receiver>
+   <slot>inDirectory()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>293</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

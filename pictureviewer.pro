@@ -43,43 +43,46 @@ HEADERS  += \
     src/ext/exif.h \
     src/app/InfoViewer.h \
     src/app/MainWindow.h \
-    src/app/DirectoryScanner.h \
-    src/app/FileList.h \
+    src/app/worker/DirectoryScanner.h \
+    src/app/model/FileList.h \
     src/app/TextWidget.h \
-    src/app/ExifModel.h \
+    src/app/model/ExifModel.h \
     src/app/ExifWindow.h \
     src/app/Watermark.h \
-    src/app/WatermarkEngine.h \
-    src/app/WatermarkSpec.h \
+    src/app/worker/WatermarkEngine.h \
+    src/app/model/WatermarkSpec.h \
     src/app/PdfMaker.h \
-    src/app/PaperSizeModel.h \
+    src/app/model/PaperSizeModel.h \
     src/app/functions.h \
-    src/app/PdfEngine.h \
-    src/app/PdfSpec.h \
-    src/app/WatermarkFiles.h
+    src/app/worker/PdfEngine.h \
+    src/app/model/PdfSpec.h \
+    src/app/worker/WatermarkFiles.h \
+    src/app/ComicMaker.h
 
 SOURCES += \
     src/main.cpp \
     src/ext/exif.cpp \
     src/app/MainWindow.cpp \
     src/app/InfoViewer.cpp \
-    src/app/DirectoryScanner.cpp \
-    src/app/FileList.cpp \
+    src/app/worker/DirectoryScanner.cpp \
+    src/app/model/FileList.cpp \
     src/app/TextWidget.cpp \
-    src/app/ExifModel.cpp \
+    src/app/model/ExifModel.cpp \
     src/app/ExifWindow.cpp \
     src/app/Watermark.cpp \
-    src/app/WatermarkEngine.cpp \
+    src/app/worker/WatermarkEngine.cpp \
     src/app/PdfMaker.cpp \
-    src/app/PaperSizeModel.cpp \
-    src/app/PdfEngine.cpp \
-    src/app/WatermarkFiles.cpp
+    src/app/model/PaperSizeModel.cpp \
+    src/app/worker/PdfEngine.cpp \
+    src/app/worker/WatermarkFiles.cpp \
+    src/app/ComicMaker.cpp
 
 FORMS    += \
     src/app/InfoViewer.ui \
     src/app/MainWindow.ui \
     src/app/ExifWindow.ui \
     src/app/Watermark.ui \
-    src/app/PdfMaker.ui
+    src/app/PdfMaker.ui \
+    src/app/ComicMaker.ui
 
 RESOURCES += resources/resources.qrc

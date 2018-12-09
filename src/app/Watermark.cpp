@@ -1,8 +1,8 @@
 #include "Watermark.h"
 #include "ui_Watermark.h"
 #include "MainWindow.h"
-#include "WatermarkEngine.h"
-#include "WatermarkFiles.h"
+#include "worker/WatermarkEngine.h"
+#include "worker/WatermarkFiles.h"
 #include "functions.h"
 
 #include <QtCore/QDebug>
@@ -14,7 +14,7 @@
 #include <QtWidgets/QMessageBox>
 
 using com::sptci::Watermark;
-using com::sptci::WatermarkSpecPtr;
+using com::sptci::model::WatermarkSpecPtr;
 
 Q_LOGGING_CATEGORY(WATERMARK, "com::sptci::Watermark")
 
@@ -114,6 +114,8 @@ void Watermark::saveAs()
 
 void Watermark::allInDirectory()
 {
+  using worker::WatermarkFiles;
+
   completed = true;
   QFileInfo fi(file);
   const auto directory = com::sptci::picturesDirectory();
@@ -145,6 +147,8 @@ void Watermark::allInDirectory()
 
 void Watermark::allFiles()
 {
+  using worker::WatermarkFiles;
+
   completed = true;
   const auto directory = com::sptci::picturesDirectory();
 
@@ -204,8 +208,8 @@ void Watermark::finished()
 
 WatermarkSpecPtr Watermark::createSpec()
 {
-  return std::make_unique<WatermarkSpec>(
-    WatermarkSpec{
+  return std::make_unique<model::WatermarkSpec>(
+    model::WatermarkSpec{
       getText(), fontColour, ui->fontComboBox->currentFont(),
       backgroundColour, ui->fontSize->value(),
       ui->textOpacity->value(), ui->backgroundOpacity->value(),
@@ -264,7 +268,7 @@ QString Watermark::getText()
 void Watermark::overlay()
 {
   auto spec = createSpec();
-  WatermarkEngine engine(spec.get(), this);
+  worker::WatermarkEngine engine(spec.get(), this);
   const auto image = engine.overlay(file);
   displayImage(image);
 }

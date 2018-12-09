@@ -6,9 +6,9 @@
 #include <QtCore/QLoggingCategory>
 #include <QtGui/QColor>
 
-using com::sptci::ExifModel;
+using com::sptci::model::ExifModel;
 
-Q_LOGGING_CATEGORY(EXIF_MODEL, "com.sptci.ExifModel")
+Q_LOGGING_CATEGORY(EXIF_MODEL, "com::sptci::model::ExifModel")
 
 ExifModel::ExifModel(const QString& file, QObject* parent) :
     QAbstractTableModel(parent), file(file)

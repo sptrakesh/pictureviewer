@@ -1,7 +1,7 @@
 #ifndef COM_SPTCI_WATERMARK_H
 #define COM_SPTCI_WATERMARK_H
 
-#include "WatermarkSpec.h"
+#include "model/WatermarkSpec.h"
 #include <QtWidgets/QProgressDialog>
 
 #include <memory>
@@ -34,7 +34,7 @@ namespace com::sptci
     void finished();
 
   private:
-    WatermarkSpecPtr createSpec();
+    model::WatermarkSpecPtr createSpec();
     void setForeground();
     void displayImage();
     void displayImage(const QImage& image);

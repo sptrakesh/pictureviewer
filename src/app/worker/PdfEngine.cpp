@@ -10,10 +10,10 @@
 #include <QtGui/QPdfWriter>
 #include <QtGui/QPixmap>
 
-using com::sptci::PdfEngine;
-using com::sptci::PdfSpecPtr;
+using com::sptci::worker::PdfEngine;
+using com::sptci::model::PdfSpecPtr;
 
-Q_LOGGING_CATEGORY(PDF_ENGINE, "com::sptci::PdfEngine")
+Q_LOGGING_CATEGORY(PDF_ENGINE, "com::sptci::worker::PdfEngine")
 
 PdfEngine::PdfEngine(PdfSpecPtr spec, const QStringList& files, QObject* parent) :
     QObject(parent), files(files), spec(std::move(spec)) {}

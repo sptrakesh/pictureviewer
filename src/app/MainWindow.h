@@ -10,7 +10,7 @@
 #include <QtCore/QProcess>
 #endif
 
-#include "FileList.h"
+#include "model/FileList.h"
 #include "TextWidget.h"
 
 namespace com::sptci
@@ -25,8 +25,8 @@ namespace com::sptci
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow() override;
 
-    FileList::Iterator cbegin() const { return files.cbegin(); }
-    FileList::Iterator cend() const { return files.cend(); }
+    model::FileList::Iterator cbegin() const { return files.cbegin(); }
+    model::FileList::Iterator cend() const { return files.cend(); }
 
   public slots:
     void openDirectory();
@@ -44,6 +44,7 @@ namespace com::sptci
     void viewExif();
     void watermark();
     void createPdf();
+    void createComic();
     void about();
     void aboutQt();
     void quit();
@@ -87,7 +88,7 @@ namespace com::sptci
     static const QString DISPLAY_SLEEP;
 
     QTimer timer;
-    FileList files;
+    model::FileList files;
     QList<QThread*> threads;
 
     enum { MaxRecentFiles = 10 };

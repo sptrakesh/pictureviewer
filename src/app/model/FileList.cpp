@@ -2,7 +2,7 @@
 
 #include <QtCore/QFile>
 
-using com::sptci::FileList;
+using com::sptci::model::FileList;
 
 FileList::FileList(QObject *parent) : QObject(parent) {}
 

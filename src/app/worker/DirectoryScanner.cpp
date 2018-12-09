@@ -6,9 +6,9 @@
 #include <QtCore/QDebug>
 #include <QtGui/QImageReader>
 
-using com::sptci::DirectoryScanner;
+using com::sptci::worker::DirectoryScanner;
 
-Q_LOGGING_CATEGORY(DIRECTORY_SCANNER, "com::sptci::DirectoryScanner")
+Q_LOGGING_CATEGORY(DIRECTORY_SCANNER, "com::sptci::worker::DirectoryScanner")
 
 DirectoryScanner::DirectoryScanner(const QString directory, QObject* parent) :
     QObject(parent), directory(directory) {}

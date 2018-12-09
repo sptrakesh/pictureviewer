@@ -8,10 +8,10 @@
 
 #include <algorithm>
 
-using com::sptci::WatermarkFiles;
-using com::sptci::WatermarkSpecPtr;
+using com::sptci::worker::WatermarkFiles;
+using com::sptci::model::WatermarkSpecPtr;
 
-Q_LOGGING_CATEGORY(WATERMARK_FILES, "com::sptci::WatermarkFiles")
+Q_LOGGING_CATEGORY(WATERMARK_FILES, "com::sptci::worker::WatermarkFiles")
 
 WatermarkFiles::WatermarkFiles(QStringList::ConstIterator begin,
     QStringList::ConstIterator end, const QDir& outDir,

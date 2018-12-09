@@ -7,9 +7,9 @@
 
 #include <mutex>
 
-#include "WatermarkSpec.h"
+#include "../model/WatermarkSpec.h"
 
-namespace com::sptci
+namespace com::sptci::worker
 {
 
   class WatermarkFiles : public QObject
@@ -18,9 +18,9 @@ namespace com::sptci
   public:
     explicit WatermarkFiles(QStringList::ConstIterator begin,
       QStringList::ConstIterator end, const QDir& outDir,
-      WatermarkSpecPtr spec, QObject* parent = nullptr);
+      com::sptci::model::WatermarkSpecPtr spec, QObject* parent = nullptr);
     explicit WatermarkFiles(const QDir& inDir, const QDir& outDir,
-      WatermarkSpecPtr spec, QObject* parent = nullptr);
+      com::sptci::model::WatermarkSpecPtr spec, QObject* parent = nullptr);
 
     int size() const { return files.size(); }
 
@@ -43,7 +43,7 @@ namespace com::sptci
     const QStringList files;
     QDir outDir;
     std::mutex mutex;
-    WatermarkSpecPtr spec;
+    com::sptci::model::WatermarkSpecPtr spec;
     bool abort = false;
   };
 

@@ -1,19 +1,19 @@
 #ifndef WATERMARKENGINE_H
 #define WATERMARKENGINE_H
 
-#include "WatermarkSpec.h"
+#include "../model/WatermarkSpec.h"
 
 #include <QtCore/QObject>
 #include <QtGui/QImage>
 #include <tuple>
 
-namespace com::sptci
+namespace com::sptci::worker
 {
   class WatermarkEngine : public QObject
   {
     Q_OBJECT
   public:
-    explicit WatermarkEngine(WatermarkSpec* spec, QObject* parent = nullptr);
+    explicit WatermarkEngine(com::sptci::model::WatermarkSpec* spec, QObject* parent = nullptr);
 
     QImage overlay(const QString& file);
     QImage burnIn(const QString& file);
@@ -25,7 +25,7 @@ namespace com::sptci
 
   private:
     QFont font;
-    WatermarkSpec* spec;
+    com::sptci::model::WatermarkSpec* spec;
     int fontSize;
   };
 

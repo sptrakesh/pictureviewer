@@ -1,11 +1,12 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "functions.h"
-#include "DirectoryScanner.h"
+#include "worker/DirectoryScanner.h"
 #include "InfoViewer.h"
 #include "ExifWindow.h"
 #include "Watermark.h"
 #include "PdfMaker.h"
+#include "ComicMaker.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
@@ -320,7 +321,7 @@ void MainWindow::watermark()
   const auto flag = playing;
   if (playing) pause();
 
-  auto w = new com::sptci::Watermark(files.current(), this);
+  auto w = new Watermark(files.current(), this);
   w->show();
 
   if (flag) playback();
@@ -333,7 +334,20 @@ void MainWindow::createPdf()
   const auto flag = playing;
   if (playing) pause();
 
-  auto w = new com::sptci::PdfMaker(files.current(), this);
+  auto w = new PdfMaker(files.current(), this);
+  w->show();
+
+  if (flag) playback();
+}
+
+void MainWindow::createComic()
+{
+  if (files.currentIndex() < 0) return;
+
+  const auto flag = playing;
+  if (playing) pause();
+
+  auto w = new ComicMaker(files.current(), this);
   w->show();
 
   if (flag) playback();
@@ -341,7 +355,7 @@ void MainWindow::createPdf()
 
 void MainWindow::about()
 {
-  com::sptci::InfoViewer::showPage("player.html");
+  InfoViewer::showPage("player.html");
 }
 
 void MainWindow::aboutQt()
@@ -472,6 +486,8 @@ void MainWindow::initDisplaySleep()
 
 void MainWindow::processDirectory(const QString& filename)
 {
+  using worker::DirectoryScanner;
+
   const auto trimmed = trimTrailingDirectorySeparator(filename);
   ui->actionStop_Scanning->setEnabled(true);
   addRecent(trimmed);
@@ -617,5 +633,6 @@ void MainWindow::enableMenu()
   ui->actionShow_File->setEnabled(true);
   ui->actionWatermark->setEnabled(true);
   ui->actionCreate_PDF->setEnabled(true);
+  ui->actionCreate_Comic->setEnabled(true);
   ui->actionDelete_File->setEnabled(true);
 }

@@ -7,15 +7,16 @@
 #include <mutex>
 #include <tuple>
 
-#include "PdfSpec.h"
+#include "../model/PdfSpec.h"
 
-namespace com::sptci {
+namespace com::sptci::worker {
 
   class PdfEngine : public QObject
   {
     Q_OBJECT
   public:
-    explicit PdfEngine(PdfSpecPtr spec, const QStringList& files, QObject* parent = nullptr);
+    explicit PdfEngine(com::sptci::model::PdfSpecPtr spec,
+      const QStringList& files, QObject* parent = nullptr);
 
   signals:
     void progress(int count, int total, QString file);
@@ -37,7 +38,7 @@ namespace com::sptci {
   private:
     std::mutex mutex;
     QStringList files;
-    PdfSpecPtr spec;
+    com::sptci::model::PdfSpecPtr spec;
     bool abort = false;
   };
 

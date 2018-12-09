@@ -5,10 +5,10 @@
 #include <QtGui/QImageReader>
 #include <QtGui/QPainter>
 
-using com::sptci::WatermarkEngine;
-using com::sptci::WatermarkSpec;
+using com::sptci::worker::WatermarkEngine;
+using com::sptci::model::WatermarkSpec;
 
-Q_LOGGING_CATEGORY(WATERMARK_ENGINE, "com::sptci::WatermarkEngine")
+Q_LOGGING_CATEGORY(WATERMARK_ENGINE, "com::sptci::worker::WatermarkEngine")
 
 WatermarkEngine::WatermarkEngine(WatermarkSpec* spec, QObject *parent) :
   QObject(parent), font(spec->font), spec(spec), fontSize(spec->fontSize) {}

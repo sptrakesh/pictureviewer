@@ -7,7 +7,7 @@
 #include <tuple>
 #include <vector>
 
-namespace com::sptci {
+namespace com::sptci::model {
 
   class PaperSizeModel : public QAbstractListModel
   {

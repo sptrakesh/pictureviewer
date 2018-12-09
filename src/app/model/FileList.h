@@ -4,7 +4,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 
-namespace com::sptci
+namespace com::sptci::model
 {
   class FileList : public QObject
   {

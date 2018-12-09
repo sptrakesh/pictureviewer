@@ -4,7 +4,7 @@
 #include <QtCore/QAbstractTableModel>
 #include <QtCore/QMap>
 
-namespace com::sptci
+namespace com::sptci::model
 {
   class ExifModel : public QAbstractTableModel
   {

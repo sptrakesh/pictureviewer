@@ -1,6 +1,6 @@
 #include "ExifWindow.h"
 #include "ui_ExifWindow.h"
-#include "ExifModel.h"
+#include "model/ExifModel.h"
 
 using com::sptci::ExifWindow;
 
@@ -10,7 +10,7 @@ ExifWindow::ExifWindow(const QString& file, QWidget *parent) :
   setWindowFlags(Qt::Window);
   setAttribute(Qt::WA_DeleteOnClose);
   ui->setupUi(this);
-  auto model = new ExifModel(file, this);
+  auto model = new model::ExifModel(file, this);
   ui->tableView->setModel(model);
   ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }

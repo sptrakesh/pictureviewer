@@ -2,8 +2,8 @@
 #include "ui_PdfMaker.h"
 #include "functions.h"
 #include "MainWindow.h"
-#include "PaperSizeModel.h"
-#include "PdfEngine.h"
+#include "model/PaperSizeModel.h"
+#include "worker/PdfEngine.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
@@ -29,7 +29,7 @@ PdfMaker::PdfMaker(const QString& file, QWidget* parent) :
 {
   ui->setupUi(this);
 
-  auto model = new com::sptci::PaperSizeModel(this);
+  auto model = new model::PaperSizeModel(this);
   ui->paperSize->setModel(model);
   ui->paperSize->setCurrentIndex(model->systemSize());
 
@@ -119,8 +119,11 @@ void PdfMaker::save(const QString& destination)
 
 void PdfMaker::saveFile(const QString& destination)
 {
+  using model::PdfSpec;
+  using worker::PdfEngine;
+
   const auto selected = ui->paperSize->currentIndex();
-  const auto model = dynamic_cast<PaperSizeModel*>(ui->paperSize->model());
+  const auto model = dynamic_cast<model::PaperSizeModel*>(ui->paperSize->model());
   const auto sizeId = model->sizeId(selected);
   qDebug(PDF_MAKER) << "Paper size " << sizeId;
   const QStringList files(file);
@@ -136,12 +139,15 @@ void PdfMaker::saveFile(const QString& destination)
 
 void PdfMaker::saveAll(const QString& destination)
 {
+  using model::PdfSpec;
+  using worker::PdfEngine;
+
   dest = destination;
   const auto list = files();
   if (list.isEmpty()) return;
 
   const auto selected = ui->paperSize->currentIndex();
-  const auto model = dynamic_cast<PaperSizeModel*>(ui->paperSize->model());
+  const auto model = dynamic_cast<model::PaperSizeModel*>(ui->paperSize->model());
   const auto sizeId = model->sizeId(selected);
 
   auto process = new PdfEngine(std::make_unique<PdfSpec>(

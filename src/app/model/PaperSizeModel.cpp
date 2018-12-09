@@ -4,9 +4,9 @@
 #include <QtCore/QLoggingCategory>
 #include <QtPrintSupport/QPrinter>
 
-using com::sptci::PaperSizeModel;
+using com::sptci::model::PaperSizeModel;
 
-Q_LOGGING_CATEGORY(PAPER_SIZE_MODEL, "com::sptci::PaperSizeModel")
+Q_LOGGING_CATEGORY(PAPER_SIZE_MODEL, "com::sptci::model::PaperSizeModel")
 
 PaperSizeModel::PaperSizeModel(QObject* parent) : QAbstractListModel(parent)
 {

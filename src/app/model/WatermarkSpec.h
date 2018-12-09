@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace com::sptci
+namespace com::sptci::model
 {
   struct WatermarkSpec
   {

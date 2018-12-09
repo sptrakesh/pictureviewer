@@ -4,7 +4,7 @@
 #include <QtCore/QObject>
 #include <mutex>
 
-namespace com::sptci
+namespace com::sptci::worker
 {
   class DirectoryScanner : public QObject
   {
