@@ -1,7 +1,8 @@
 #ifndef COM_SPTCI_COMICMAKER_H
 #define COM_SPTCI_COMICMAKER_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
+#include "worker/ComicEngine.h"
 
 namespace com::sptci {
 
@@ -20,10 +21,13 @@ namespace com::sptci {
     void inDirectory();
 
   private:
+    QString targetFile();
+    void configureEngine(worker::ComicEngine* engine);
+
+  private:
     const QString file;
     Ui::ComicMaker *ui;
   };
-
 
 } // namespace com::sptci
 #endif // COM_SPTCI_COMICMAKER_H

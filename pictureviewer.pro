@@ -1,88 +1,9 @@
-QT += core gui widgets printsupport
+TEMPLATE = subdirs
+CONFIG += ordered
 
-TARGET = PictureViewer
-TEMPLATE = app
+SUBDIRS = libs \
+  src
 
-CONFIG(debug, debug|release) {
-  DESTDIR = build/debug
-}
-CONFIG(release, debug|release) {
-  DESTDIR = build/release
-  CONFIG += optimize_full
-}
-
-OBJECTS_DIR = $$DESTDIR/.obj
-MOC_DIR = $$DESTDIR/.moc
-RCC_DIR = $$DESTDIR/.qrc
-UI_DIR = $$DESTDIR/.u
-
-macx {
-  CONFIG += c++1z sdk_no_version_check
-  QMAKE_CXXFLAGS = -std=c++17
-  QMAKE_INFO_PLIST = resources/Info.plist
-  ICON = resources/images/Icon.icns
-  QMAKE_CFLAGS += -gdwarf-2
-  QMAKE_CXXFLAGS += -gdwarf-2
-}
-
-
-win32 {
-  vsproj.spec = $$basename(QMAKESPEC)
-  DEFINES += NOMINMAX WIN32 _WINDOWS QCE_BUILD
-  QMAKE_CFLAGS += /D_CRT_SECURE_NO_WARNINGS /DSUPPORT_UTF8 /MP
-  QMAKE_CXXFLAGS = $$QMAKE_CFLAGS
-  QMAKE_CXXFLAGS += /std:c++latest
-  RC_FILE = resources/winicon.rc
-
-  LIBS += -lAdvapi32 -lWs2_32 -lIphlpapi
-}
-
-INCLUDEPATH += src/app
-
-HEADERS  += \
-    src/ext/exif.h \
-    src/app/InfoViewer.h \
-    src/app/MainWindow.h \
-    src/app/worker/DirectoryScanner.h \
-    src/app/model/FileList.h \
-    src/app/TextWidget.h \
-    src/app/model/ExifModel.h \
-    src/app/ExifWindow.h \
-    src/app/Watermark.h \
-    src/app/worker/WatermarkEngine.h \
-    src/app/model/WatermarkSpec.h \
-    src/app/PdfMaker.h \
-    src/app/model/PaperSizeModel.h \
-    src/app/functions.h \
-    src/app/worker/PdfEngine.h \
-    src/app/model/PdfSpec.h \
-    src/app/worker/WatermarkFiles.h \
-    src/app/ComicMaker.h
-
-SOURCES += \
-    src/main.cpp \
-    src/ext/exif.cpp \
-    src/app/MainWindow.cpp \
-    src/app/InfoViewer.cpp \
-    src/app/worker/DirectoryScanner.cpp \
-    src/app/model/FileList.cpp \
-    src/app/TextWidget.cpp \
-    src/app/model/ExifModel.cpp \
-    src/app/ExifWindow.cpp \
-    src/app/Watermark.cpp \
-    src/app/worker/WatermarkEngine.cpp \
-    src/app/PdfMaker.cpp \
-    src/app/model/PaperSizeModel.cpp \
-    src/app/worker/PdfEngine.cpp \
-    src/app/worker/WatermarkFiles.cpp \
-    src/app/ComicMaker.cpp
-
-FORMS    += \
-    src/app/InfoViewer.ui \
-    src/app/MainWindow.ui \
-    src/app/ExifWindow.ui \
-    src/app/Watermark.ui \
-    src/app/PdfMaker.ui \
-    src/app/ComicMaker.ui
-
-RESOURCES += resources/resources.qrc
+INCLUDEPATH += src/app \
+  libs/QArchive \
+  libs/QArchive/include

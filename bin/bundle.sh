@@ -19,7 +19,7 @@ withCreateDmg()
 
   rm -rf /tmp/create-dmg/PictureViewer.app
   rm -rf /tmp/create-dmg/PictureViewer*.dmg
-  \cp -Rp build/release/PictureViewer.app /tmp/create-dmg
+  \cp -Rp build/PictureViewer.app /tmp/create-dmg
   \cp resources/images/Icon.icns /tmp/create-dmg/icon.icns
   (cd /tmp/create-dmg;
     ./create-dmg --window-size 500 300 --icon-size 96 \
@@ -36,7 +36,7 @@ withMakeDmg()
 
   rm -rf /tmp/make_dmg/PictureViewer.app
   rm -rf /tmp/make_dmg/PictureViewer*.dmg
-  \cp -Rp build/release/PictureViewer.app /tmp/make_dmg
+  \cp -Rp build/PictureViewer.app /tmp/make_dmg
   \cp resources/images/Icon.icns /tmp/make_dmg
   \cp resources/images/background.jpg /tmp/make_dmg/
   (cd /tmp/make_dmg;
@@ -52,9 +52,12 @@ withMakeDmg()
 }
 
 rm -f Makefile
+rm -f lib/Makefile
+rm -f src/Makefile
+rm -rf build/PictureViewer.app
 $QTDIR/bin/qmake pictureviewer.pro -spec macx-clang CONFIG+=release CONFIG+=x86_64 \
   && make -j8 \
-  && $QTDIR/bin/macdeployqt build/release/PictureViewer.app -appstore-compliant -fs=APFS \
+  && $QTDIR/bin/macdeployqt build/PictureViewer.app -appstore-compliant -fs=APFS \
   && withMakeDmg
 
 rm -f Makefile

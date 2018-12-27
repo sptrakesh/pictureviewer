@@ -28,7 +28,10 @@ void DirectoryScanner::scan()
 {
   QEventLoop loop;
   auto count = 0;
-  QDirIterator iter{ directory, QDirIterator::Subdirectories};
+
+  auto dir = directory.endsWith(".photoslibrary") ?
+    QString("%1/Masters").arg(directory) : directory;
+  QDirIterator iter{ dir, QDirIterator::Subdirectories};
   while (iter.hasNext())
   {
     if (abort)
@@ -52,10 +55,6 @@ void DirectoryScanner::scan()
     if (fileName.endsWith(".lock")) continue;
     if (fileName.startsWith("_")) continue;
     if (fileName.startsWith(".")) continue;
-    if (directory.endsWith(".photoslibrary") && path.contains("derivative")) continue;
-    if (directory.endsWith(".photoslibrary") && fileName.contains("facetile_")) continue;
-    if (directory.endsWith(".photoslibrary") && fileName.contains("jpegvideocomplement_")) continue;
-    if (directory.endsWith(".photoslibrary") && fileName.endsWith(".data")) continue;
 
     const auto bytes = QImageReader::imageFormat(path);
     if (!bytes.isEmpty())

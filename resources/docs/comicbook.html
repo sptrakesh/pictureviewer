@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" /><!-- Enables IE to use Chrome's rendering engine if installed -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Picture player application" />
+    <title>Picture Viewer | Sans Pareil Technologies, Inc.</title>
+  </head>
+  <body bgcolor="black">
+    <div id="container">
+      <div id="midContainer">
+        <div id="contentContainer"><!-- Start main content wrapper -->
+          <div id="content" style="color:white;"><!-- Start content -->
+            <h2>Create Comic Book's</h2>
+            <div>
+              Comic book archive or reader files are simple archives
+              containing a sequence of image files with a special
+              naming convention.  Standard archive formats like
+              <code>tar, zip, 7z, rar</code> are used with a special
+              file suffix to indicate the type of archive used.  Readers
+              are able to unarchive and display the contents of these files.
+            </div>
+            <h3>Supported formats</h3>
+            <ul>
+              <li><strong>rar</strong> - Archives created using <code>rar</code>
+                compression codec.  The desired images are
+                added to a standard rar file using the <code>rar</code>
+                extension.  Once generated, the file is renamed to have the
+                <code>cbr</code> extension which helps readers identify the
+                codec as <code>rar</code>.</li>
+              <li><strong>zip</strong> - Archives created using <code>zip</code>
+                compression codec.  The desired images are
+                added to a standard zip file using the <code>zip</code>
+                extension.  Once generated, the file is renamed to have the
+                <code>cbz</code> extension which helps readers identify the
+                codec as <code>zip</code>.</li>
+              <li><strong>tar</strong> - Archives created using <code>tar</code>
+                archive format.  The desired images are
+                added to a standard tar file using the <code>tar</code>
+                extension.  Once generated, the file is renamed to have the
+                <code>cbt</code> extension which helps readers identify the
+                codec as <code>tar</code>.</li>
+              <li><strong>7z</strong> - Archives created using <code>7z</code>
+                archive format.  The desired images are
+                added to a standard 7z file using the <code>7z</code>
+                extension.  Once generated, the file is renamed to have the
+                <code>cb7</code> extension which helps readers identify the
+                codec as <code>7z</code>.</li>
+            </ul>
+            <h3>Note</h3>
+            <div>
+              The output file is renamed to have the standard <code>cbr,
+              cbz, cbt, cb7</code> extension.  If a target file with the
+              same extension already exists, it will be replaced by the
+              new file being generated.
+            </div>
+            <h3>Credits</h3>
+            <div>
+              The archive is created using <code>libarchive</code>.  We
+              also use the <code>QArchive</code> Qt library as the wrapper
+              around <code>libarchive</code>.
+            </div>
+          </div><!-- End content -->
+        </div><!-- End main content wrapper -->
+      </div>
+    </div><!-- End container -->
+  </body>
+</html>

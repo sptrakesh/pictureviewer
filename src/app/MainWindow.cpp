@@ -52,7 +52,6 @@ MainWindow::MainWindow(QWidget *parent) :
   const auto title = QString("%1 : %2").arg(windowTitle()).arg(index);
   setWindowTitle(title);
 
-  ui->statusbar->setStyleSheet("QStatusBar{color:black}");
   intervalTextWidget = new TextWidget(QString("%1 : %2s").
       arg(tr("Playback Interval")).
       arg(ui->intervalSlider->value()), this);

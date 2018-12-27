@@ -47,6 +47,6 @@ namespace com::sptci::worker
     bool abort = false;
   };
 
-} // namespace com::sptci
+} // namespace com::sptci::worker
 
 #endif // WATERMARKFILES_H

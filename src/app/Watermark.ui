@@ -56,6 +56,10 @@
        </item>
        <item row="0" column="1">
         <widget class="QLineEdit" name="text">
+         <property name="styleSheet">
+          <string notr="true">QLineEdit{ color:rgb(0,0,0); background-color:rgb(192,192,255);}
+QLineEdit:focus { color:rgb(0,0,0); background-color:rgb(255,255,255);}</string>
+         </property>
          <property name="placeholderText">
           <string>Sample watermark</string>
          </property>
