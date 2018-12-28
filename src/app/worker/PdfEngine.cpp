@@ -64,14 +64,18 @@ void PdfEngine::addFile(QPainter* painter, const Dimension& dimension,
   reader.setAutoTransform(true);
 
   const auto& [width, height] = dimension;
-  auto pixmap = QPixmap::fromImageReader(&reader).scaled(
-    width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  auto image = reader.read();
+  auto pixmap = QPixmap::fromImage(image);
+  auto scaled = QPixmap::fromImage(image).scaled(
+    width, height, Qt::KeepAspectRatio);
 
-  const auto x = (pixmap.width() < width ) ?
-    static_cast<int>((width - pixmap.width())/2.0) : 0;
-  const auto y = (pixmap.height() < height ) ?
-    static_cast<int>((height - pixmap.height())/2.0) : 0;
+  const auto x = (scaled.width() < width ) ?
+    static_cast<int>((width - scaled.width())/2.0) : 0;
+  const auto y = (scaled.height() < height ) ?
+    static_cast<int>((height - scaled.height())/2.0) : 0;
 
+  qInfo(PDF_ENGINE) << "Original size " << pixmap.width() << "x" << pixmap.height()
+    << "; scaled size " << scaled.width() << "x" << scaled.height();
   if (spec->compression != 100)
   {
     qInfo(PDF_ENGINE) << "Compressing file to JPEG quality " << spec->compression;
@@ -88,7 +92,7 @@ void PdfEngine::addFile(QPainter* painter, const Dimension& dimension,
     }
   }
 
-  painter->drawPixmap(QPoint(x, y), pixmap);
+  painter->drawPixmap(x, y, scaled.width(), scaled.height(), pixmap);
 }
 
 auto PdfEngine::dimensions(int dpiX, int dpiY) -> Dimension
