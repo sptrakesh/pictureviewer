@@ -7,6 +7,7 @@
 #include "Watermark.h"
 #include "PdfMaker.h"
 #include "ComicMaker.h"
+#include "LogViewer.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
@@ -350,6 +351,12 @@ void MainWindow::createComic()
   w->show();
 
   if (flag) playback();
+}
+
+void MainWindow::viewLogs()
+{
+  auto w = new LogViewer(this);
+  w->show();
 }
 
 void MainWindow::about()

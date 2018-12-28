@@ -77,7 +77,9 @@ HEADERS  += \
     app/worker/WatermarkFiles.h \
     app/ComicMaker.h \
     app/worker/ComicEngine.h \
-    app/model/ComicBookSpec.h
+    app/model/ComicBookSpec.h \
+    app/logger.h \
+    app/LogViewer.h
 
 SOURCES += \
     main.cpp \
@@ -96,7 +98,9 @@ SOURCES += \
     app/worker/PdfEngine.cpp \
     app/worker/WatermarkFiles.cpp \
     app/ComicMaker.cpp \
-    app/worker/ComicEngine.cpp
+    app/worker/ComicEngine.cpp \
+    app/logger.cpp \
+    app/LogViewer.cpp
 
 FORMS    += \
     app/InfoViewer.ui \
@@ -104,6 +108,7 @@ FORMS    += \
     app/ExifWindow.ui \
     app/Watermark.ui \
     app/PdfMaker.ui \
-    app/ComicMaker.ui
+    app/ComicMaker.ui \
+    app/LogViewer.ui
 
 RESOURCES += ../resources/resources.qrc

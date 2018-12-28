@@ -45,6 +45,7 @@ namespace com::sptci
     void watermark();
     void createPdf();
     void createComic();
+    void viewLogs();
     void about();
     void aboutQt();
     void quit();

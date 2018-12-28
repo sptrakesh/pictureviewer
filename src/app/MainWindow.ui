@@ -169,6 +169,8 @@
     <addaction name="actionCreate_Comic"/>
     <addaction name="separator"/>
     <addaction name="actionDelete_File"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_Logs"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlayback"/>
@@ -363,6 +365,11 @@
    </property>
    <property name="toolTip">
     <string>Create Comic Book Archive</string>
+   </property>
+  </action>
+  <action name="actionView_Logs">
+   <property name="text">
+    <string>View Logs</string>
    </property>
   </action>
  </widget>
@@ -679,6 +686,22 @@
    <signal>triggered()</signal>
    <receiver>com::sptci::MainWindow</receiver>
    <slot>createComic()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionView_Logs</sender>
+   <signal>triggered()</signal>
+   <receiver>com::sptci::MainWindow</receiver>
+   <slot>viewLogs()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
