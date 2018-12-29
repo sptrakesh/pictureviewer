@@ -1,6 +1,6 @@
 QT += core concurrent gui widgets printsupport
 
-TARGET = ../PictureViewer
+TARGET = PictureViewer
 TEMPLATE = app
 
 CONFIG(debug, debug|release) {
@@ -29,20 +29,9 @@ macx {
   QMAKE_CXXFLAGS += -gdwarf-2
 
   INCLUDEPATH += /opt/local/include
-  LIBS += /opt/local/lib/libarchive.a \
-    /opt/local/lib/libiconv.a \
-    /opt/local/lib/liblzo2.a \
-    /opt/local/lib/liblzma.a \
-    /opt/local/lib/liblz4.a \
-    /opt/local/lib/libcharset.a \
-    /opt/local/lib/libbz2.a \
-    /opt/local/lib/libz.a \
-    /opt/local/lib/libxml2.a \
-    /opt/local/lib/libicui18n.a \
-    /opt/local/lib/libicuuc.a \
-    /opt/local/lib/libicudata.a
+  LIBS += -L /opt/local/lib -larchive -liconv -llzo2 -llzma -llz4 \
+    -lcharset -lbz2 -lz -lxml2 -licui18n -licuuc -licudata
 }
-
 
 win32 {
   vsproj.spec = $$basename(QMAKESPEC)
@@ -79,7 +68,11 @@ HEADERS  += \
     app/worker/ComicEngine.h \
     app/model/ComicBookSpec.h \
     app/logger.h \
-    app/LogViewer.h
+    app/LogViewer.h \
+    app/ComicReader.h \
+    app/ComicListWidget.h \
+    app/model/ComicList.h \
+    app/worker/ComicScanner.h
 
 SOURCES += \
     main.cpp \
@@ -100,7 +93,11 @@ SOURCES += \
     app/ComicMaker.cpp \
     app/worker/ComicEngine.cpp \
     app/logger.cpp \
-    app/LogViewer.cpp
+    app/LogViewer.cpp \
+    app/ComicReader.cpp \
+    app/ComicListWidget.cpp \
+    app/model/ComicList.cpp \
+    app/worker/ComicScanner.cpp
 
 FORMS    += \
     app/InfoViewer.ui \
@@ -109,6 +106,8 @@ FORMS    += \
     app/Watermark.ui \
     app/PdfMaker.ui \
     app/ComicMaker.ui \
-    app/LogViewer.ui
+    app/LogViewer.ui \
+    app/ComicReader.ui \
+    app/ComicListWidget.ui
 
 RESOURCES += ../resources/resources.qrc

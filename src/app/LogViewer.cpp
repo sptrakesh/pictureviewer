@@ -2,6 +2,7 @@
 #include "ui_LogViewer.h"
 #include "logger.h"
 
+#include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
@@ -25,6 +26,7 @@ void LogViewer::refresh()
 {
   QFile file(com::sptci::logFile());
   file.open(QIODevice::ReadOnly | QIODevice::Text);
+  qDebug() << "Reading contents of log file " << file.fileName();
 
   QTextStream in(&file);
   QString line;

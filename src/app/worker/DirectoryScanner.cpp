@@ -31,13 +31,13 @@ void DirectoryScanner::scan()
 
   auto dir = directory.endsWith(".photoslibrary") ?
     QString("%1/Masters").arg(directory) : directory;
-  QDirIterator iter{ dir, QDirIterator::Subdirectories};
+  QDirIterator iter{ dir, QDirIterator::Subdirectories };
   while (iter.hasNext())
   {
     if (abort)
     {
       qInfo(DIRECTORY_SCANNER) << "Aborted scanning " << directory << " after " << count << " images";
-      return;
+      break;
     }
 
     const auto path = iter.next();

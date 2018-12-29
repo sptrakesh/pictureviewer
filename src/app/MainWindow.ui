@@ -166,15 +166,22 @@
     <addaction name="actionView_Exif"/>
     <addaction name="actionWatermark"/>
     <addaction name="actionCreate_PDF"/>
-    <addaction name="actionCreate_Comic"/>
     <addaction name="separator"/>
     <addaction name="actionDelete_File"/>
     <addaction name="separator"/>
     <addaction name="actionView_Logs"/>
    </widget>
+   <widget class="QMenu" name="menuComic_Book">
+    <property name="title">
+     <string>Comic Book</string>
+    </property>
+    <addaction name="actionCreate_Comic"/>
+    <addaction name="actionRead_Comic"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPlayback"/>
    <addaction name="menuTools"/>
+   <addaction name="menuComic_Book"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -370,6 +377,11 @@
   <action name="actionView_Logs">
    <property name="text">
     <string>View Logs</string>
+   </property>
+  </action>
+  <action name="actionRead_Comic">
+   <property name="text">
+    <string>Read Comic</string>
    </property>
   </action>
  </widget>
@@ -702,6 +714,22 @@
    <signal>triggered()</signal>
    <receiver>com::sptci::MainWindow</receiver>
    <slot>viewLogs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRead_Comic</sender>
+   <signal>triggered()</signal>
+   <receiver>com::sptci::MainWindow</receiver>
+   <slot>readComic()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
