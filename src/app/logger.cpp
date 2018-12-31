@@ -1,8 +1,8 @@
 #include "logger.h"
+#include "functions.h"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QFile>
-#include <QtCore/QStandardPaths>
 #include <QtCore/QTextStream>
 
 #include <mutex>
@@ -36,11 +36,10 @@ namespace com::sptci
 
   QString logFile()
   {
-    return QString("%1/pictureviewer.log").
-      arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    return QString("%1/pictureviewer.log").arg(com::sptci::tempDirectory());
   }
 
-void formatMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+  void formatMessage(QtMsgType type, const QMessageLogContext& context, const QString& msg)
   {
     static Logger logger;
 

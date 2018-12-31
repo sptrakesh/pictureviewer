@@ -15,6 +15,12 @@ namespace com::sptci {
     explicit ComicReader(QWidget* parent = nullptr);
     ~ComicReader();
 
+  signals:
+    void display(QString file);
+
+  private slots:
+    void displayFile(QString file);
+
   private:
     void init();
 

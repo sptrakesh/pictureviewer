@@ -24,6 +24,11 @@ namespace com::sptci
       QDir::homePath() : documentsLocations.last();
   }
 
+  inline QString tempDirectory()
+  {
+    return QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+  }
+
   inline void showFile(const QString& filePath)
   {
 #if defined(Q_OS_MAC)

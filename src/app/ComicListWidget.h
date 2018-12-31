@@ -17,11 +17,14 @@ namespace com::sptci
     explicit ComicListWidget(QWidget* parent = nullptr);
     ~ComicListWidget();
 
+  signals:
+    void display(QString file);
+
   public slots:
     void addFile();
     void removeFile();
     void scan();
-    void showComic();
+    void showComic(QModelIndex index);
 
   private slots:
     void addComic(QString file);

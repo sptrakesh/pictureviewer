@@ -3,6 +3,7 @@
 #include "functions.h"
 #include "worker/ComicScanner.h"
 
+#include <QtCore/QDebug>
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
 #include <QtWidgets/QFileDialog>
@@ -60,8 +61,11 @@ void ComicListWidget::scan()
   thread->start();
 }
 
-void ComicListWidget::showComic()
+void ComicListWidget::showComic(QModelIndex index)
 {
+  qDebug() << "ComicListWidget - Received double click event " << index;
+  const auto file = model->fileName(index);
+  emit display(file);
 }
 
 void ComicListWidget::addComic(QString file)

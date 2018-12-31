@@ -72,7 +72,8 @@ HEADERS  += \
     app/ComicReader.h \
     app/ComicListWidget.h \
     app/model/ComicList.h \
-    app/worker/ComicScanner.h
+    app/worker/ComicScanner.h \
+    app/ComicDisplayWidget.h
 
 SOURCES += \
     main.cpp \
@@ -97,7 +98,8 @@ SOURCES += \
     app/ComicReader.cpp \
     app/ComicListWidget.cpp \
     app/model/ComicList.cpp \
-    app/worker/ComicScanner.cpp
+    app/worker/ComicScanner.cpp \
+    app/ComicDisplayWidget.cpp
 
 FORMS    += \
     app/InfoViewer.ui \
@@ -108,6 +110,7 @@ FORMS    += \
     app/ComicMaker.ui \
     app/LogViewer.ui \
     app/ComicReader.ui \
-    app/ComicListWidget.ui
+    app/ComicListWidget.ui \
+    app/ComicDisplayWidget.ui
 
 RESOURCES += ../resources/resources.qrc

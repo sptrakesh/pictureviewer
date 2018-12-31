@@ -21,6 +21,8 @@ namespace com::sptci::model
     bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 
+    QString fileName(QModelIndex index) const;
+
   public slots:
     void addFile(const QString& file);
 

@@ -74,6 +74,12 @@ bool ComicList::removeRows(int row, int count, const QModelIndex& parent)
   return true;
 }
 
+QString ComicList::fileName(QModelIndex index) const
+{
+  const auto map = list.at(index.row());
+  return map["file"].toString();
+}
+
 void ComicList::addFile(const QString& file)
 {
   QSettings settings;
