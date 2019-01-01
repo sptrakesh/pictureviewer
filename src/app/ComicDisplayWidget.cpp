@@ -1,8 +1,7 @@
 #include "ComicDisplayWidget.h"
 #include "ui_ComicDisplayWidget.h"
 #include "functions.h"
-
-#include <QArchive.hpp>
+#include "archive/Reader.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -48,36 +47,12 @@ namespace com::sptci::comic
     const QString input;
     const QString output;
   };
-
-  struct OutputDirectory
-  {
-    OutputDirectory()
-    {
-      auto uuid = QUuid::createUuid().toString();
-      uuid.replace("{", "");
-      uuid.replace("}", "");
-      auto name = QString("%1/%2").arg(tempDirectory()).arg(uuid);
-      dir = QDir(name);
-      if (!dir.exists()) dir.mkpath(".");
-    }
-
-    OutputDirectory(const OutputDirectory&) = delete;
-    OutputDirectory& operator=(const OutputDirectory&) = delete;
-
-    ~OutputDirectory()
-    {
-      qDebug(COMIC_DISPLAY) << "Removing unarchived files under " << dir.absolutePath();
-      dir.removeRecursively();
-    }
-
-    QDir dir;
-  };
 }
 
 using com::sptci::ComicDisplayWidget;
 
 ComicDisplayWidget::ComicDisplayWidget(QWidget* parent) :
-  QWidget(parent), ui(new Ui::ComicDisplayWidget)
+  QWidget(parent), ui(new Ui::ComicDisplayWidget), outputDirectory()
 {
   ui->setupUi(this);
 }
@@ -89,19 +64,14 @@ ComicDisplayWidget::~ComicDisplayWidget()
 
 void ComicDisplayWidget::display(const QString& file)
 {
-  using QArchive::Reader;
-
   files.clear();
   outputFile = std::make_unique<comic::OutputFile>(file);
   QFile::copy(file, outputFile->output);
-
-  const auto json = Reader(outputFile->output).start().waitForFinished().getFilesList();
-  files << json.keys();
+  extract();
 
   ui->spinBox->setMaximum(files.size() - 1);
   ui->horizontalSlider->setMaximum(files.size() - 1);
 
-  extract();
   showFile();
 }
 
@@ -113,19 +83,10 @@ void ComicDisplayWidget::atIndex(int index)
 
 void ComicDisplayWidget::extract()
 {
-  using QArchive::Extractor;
-
-  if (!outputDirectory) outputDirectory = std::make_unique<comic::OutputDirectory>();
-  Extractor extractor(outputFile->output, outputDirectory->dir.absolutePath());
-
-  extractor.setFunc(QArchive::EXTRACTED, [&](QString file) {
-    qDebug(COMIC_DISPLAY) << "Extracted file: " << file;
-  });
-  extractor.setFunc([&](short code, QString file) {
-    qWarning(COMIC_DISPLAY) << "Extraction error - code: " << code << ", file: " << file;
-  });
-
-  extractor.start().waitForFinished();
+  archive::OutputDirectory outputDirectory;
+  archive::Reader reader(outputFile->output);
+  const auto list = reader.extractAll(outputDirectory);
+  files.append(list);
 }
 
 void ComicDisplayWidget::showFile(int index)
@@ -137,7 +98,7 @@ void ComicDisplayWidget::showFile(int index)
   ui->horizontalSlider->setValue(index);
 
   auto fileName = files.at(index);
-  auto file = QString("%1/%2").arg(outputDirectory->dir.absolutePath()).arg(fileName);
+  auto file = QString("%1/%2").arg(outputDirectory.dir.absolutePath()).arg(fileName);
   qDebug(COMIC_DISPLAY) << "Displaying image " << file;
   QImageReader reader(file);
   reader.setAutoTransform(true);

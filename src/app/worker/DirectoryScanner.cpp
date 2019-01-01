@@ -29,7 +29,7 @@ void DirectoryScanner::scan()
   QEventLoop loop;
   auto count = 0;
 
-  auto dir = directory.endsWith(".photoslibrary") ?
+  auto dir = directory.contains("Photos Library.photoslibrary") ?
     QString("%1/Masters").arg(directory) : directory;
   QDirIterator iter{ dir, QDirIterator::Subdirectories };
   while (iter.hasNext())

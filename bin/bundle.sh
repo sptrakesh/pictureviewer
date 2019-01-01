@@ -57,7 +57,7 @@ rm -f src/Makefile
 rm -rf build/release/PictureViewer.app
 $QTDIR/bin/qmake pictureviewer.pro -spec macx-clang CONFIG+=release CONFIG+=x86_64 \
   && make -j8 \
-  && $QTDIR/bin/macdeployqt build/release/PictureViewer.app -appstore-compliant -fs=APFS \
+  && $QTDIR/bin/macdeployqt build/release/PictureViewer.app -appstore-compliant -fs=APFS -verbose=2 \
   && withMakeDmg
 
 rm -f Makefile

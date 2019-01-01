@@ -73,7 +73,11 @@ HEADERS  += \
     app/ComicListWidget.h \
     app/model/ComicList.h \
     app/worker/ComicScanner.h \
-    app/ComicDisplayWidget.h
+    app/ComicDisplayWidget.h \
+    app/archive/Reader.h \
+    app/archive/ScopedArchive.h \
+    app/archive/ScopedArchiveEntry.h \
+    app/archive/OutputDirectory.h
 
 SOURCES += \
     main.cpp \
@@ -99,7 +103,11 @@ SOURCES += \
     app/ComicListWidget.cpp \
     app/model/ComicList.cpp \
     app/worker/ComicScanner.cpp \
-    app/ComicDisplayWidget.cpp
+    app/ComicDisplayWidget.cpp \
+    app/archive/Reader.cpp \
+    app/archive/ScopedArchive.cpp \
+    app/archive/ScopedArchiveEntry.cpp \
+    app/archive/OutputDirectory.cpp
 
 FORMS    += \
     app/InfoViewer.ui \

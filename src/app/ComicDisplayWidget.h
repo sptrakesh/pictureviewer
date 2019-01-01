@@ -6,16 +6,14 @@
 
 #include <memory>
 
+#include "archive/OutputDirectory.h"
+
 namespace com::sptci
 {
 
   namespace Ui { class ComicDisplayWidget; }
 
-  namespace comic
-  {
-    struct OutputFile;
-    struct OutputDirectory;
-  }
+  namespace comic { struct OutputFile; }
 
   class ComicDisplayWidget : public QWidget
   {
@@ -37,7 +35,7 @@ namespace com::sptci
     QStringList files;
     Ui::ComicDisplayWidget* ui;
     std::unique_ptr<comic::OutputFile> outputFile;
-    std::unique_ptr<comic::OutputDirectory> outputDirectory;
+    archive::OutputDirectory outputDirectory;
     int currentIndex = 0;
   };
 
