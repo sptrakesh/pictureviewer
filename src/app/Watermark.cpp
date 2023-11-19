@@ -43,7 +43,8 @@ void Watermark::selectFontColour()
 {
   const auto colour = QColorDialog::getColor(Qt::black, this, tr("Font Colour"));
   if (!colour.isValid()) return;
-  fontColour.setNamedColor(colour.name());
+  //fontColour.setNamedColor(colour.name());
+  fontColour = QColor::fromString(colour.name());
   fontColour.setAlpha(ui->textOpacity->value());
 
   auto pal = ui->fontColour->palette();
@@ -57,7 +58,8 @@ void Watermark::selectBackgroundColour()
 {
   const auto colour = QColorDialog::getColor(Qt::black, this, "Font Colour");
   if (!colour.isValid()) return;
-  backgroundColour.setNamedColor(colour.name());
+  //backgroundColour.setNamedColor(colour.name());
+  backgroundColour = QColor::fromString(colour.name());
   backgroundColour.setAlpha(ui->backgroundOpacity->value());
 
   auto pal = ui->backgroundColour->palette();
@@ -282,7 +284,7 @@ void Watermark::saveFile(const QString& fileName)
     return;
   }
 
-  const auto image = pixmap->toImage();
+  const auto image = pixmap.toImage();
   if (image.save(fileName, nullptr, 100))
   {
     qInfo(WATERMARK) << "Wrote watermarked image to " << fileName;

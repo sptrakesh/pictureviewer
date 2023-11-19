@@ -13,6 +13,7 @@ CONFIG(release, debug|release) {
 
 LIBS += ../libs/QArchive/libQArchive.a
 INCLUDEPATH += app \
+  ../libs/QArchive \
   ../libs/QArchive/include
 
 OBJECTS_DIR = $$DESTDIR/.obj
@@ -21,16 +22,16 @@ RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.u
 
 macx {
-  CONFIG += c++1z sdk_no_version_check
-  QMAKE_CXXFLAGS = -std=c++17
+  CONFIG += c++20 sdk_no_version_check
+  QMAKE_CXXFLAGS = -std=c++20
   QMAKE_INFO_PLIST = ../resources/Info.plist
   ICON = ../resources/images/Icon.icns
   QMAKE_CFLAGS += -gdwarf-2
   QMAKE_CXXFLAGS += -gdwarf-2
 
-  INCLUDEPATH += /opt/local/include
-  LIBS += -L /opt/local/lib -larchive -liconv -llzo2 -llzma -llz4 \
-    -lcharset -lbz2 -lz -lxml2 -licui18n -licuuc -licudata
+  INCLUDEPATH +=/opt/homebrew/opt/libarchive/include
+  LIBS += -L /opt/homebrew/opt/libarchive/lib -larchive -liconv -llzma \
+    -lcharset -lbz2 -lz -lxml2
 }
 
 win32 {
@@ -77,7 +78,8 @@ HEADERS  += \
     app/archive/Reader.h \
     app/archive/ScopedArchive.h \
     app/archive/ScopedArchiveEntry.h \
-    app/archive/OutputDirectory.h
+    app/archive/OutputDirectory.h \
+    app/archive/Writer.h
 
 SOURCES += \
     main.cpp \
@@ -107,7 +109,8 @@ SOURCES += \
     app/archive/Reader.cpp \
     app/archive/ScopedArchive.cpp \
     app/archive/ScopedArchiveEntry.cpp \
-    app/archive/OutputDirectory.cpp
+    app/archive/OutputDirectory.cpp \
+    app/archive/Writer.cpp
 
 FORMS    += \
     app/InfoViewer.ui \

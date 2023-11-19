@@ -222,4 +222,7 @@ QSpinBox:focus { color:rgb(0,0,0); background-color:rgb(255,255,255);}</string>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>saveAs()</slot>
+ </slots>
 </ui>

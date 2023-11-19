@@ -24,7 +24,7 @@ void PdfEngine::run()
   int count = 0;
 
   QPdfWriter writer(spec->destination);
-  const auto value = static_cast<QPagedPaintDevice::PageSize>(spec->paperSize);
+  const auto value = static_cast<QPageSize::PageSizeId>(spec->paperSize);
   writer.setPageSize(value);
 
   if (!spec->title.isEmpty()) writer.setTitle(spec->title);

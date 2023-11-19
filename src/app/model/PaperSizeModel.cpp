@@ -3,6 +3,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QLoggingCategory>
 #include <QtPrintSupport/QPrinter>
+#include <QtGui/QPageSize>
 
 using com::sptci::model::PaperSizeModel;
 
@@ -182,10 +183,10 @@ void PaperSizeModel::populate()
 
 void PaperSizeModel::setIndex()
 {
-  const auto system = QPrinter().pageSize();
+  const auto system = QPrinter().pageLayout().pageSize().id();
   for (std::size_t i = 0; i < items.size(); ++i)
   {
-    if (system == static_cast<QPagedPaintDevice::PageSize>(std::get<0>(items[i])))
+    if (system == static_cast<QPageSize::PageSizeId>(std::get<0>(items[i])))
     {
       systemSizeIndex = i;
       qInfo(PAPER_SIZE_MODEL) << "Using sysem default paper size at index: " << i;

@@ -1,7 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <QtCore/QtMsgHandler>
+#include <QtCore/QtLogging>
 
 namespace com::sptci
 {

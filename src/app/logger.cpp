@@ -20,7 +20,7 @@ namespace com::sptci
     void log(const QString& message)
     {
       std::lock_guard<std::mutex> lock(mutex);
-      stream << message << endl;
+      stream << message << Qt::endl;
     }
 
     ~Logger()

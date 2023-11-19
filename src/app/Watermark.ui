@@ -356,8 +356,8 @@ QLineEdit:focus { color:rgb(0,0,0); background-color:rgb(255,255,255);}</string>
      <y>689</y>
     </hint>
     <hint type="destinationlabel">
-     <x>539</x>
-     <y>359</y>
+     <x>686</x>
+     <y>361</y>
     </hint>
    </hints>
   </connection>
@@ -394,4 +394,13 @@ QLineEdit:focus { color:rgb(0,0,0); background-color:rgb(255,255,255);}</string>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>selectFontColour()</slot>
+  <slot>preview()</slot>
+  <slot>clear()</slot>
+  <slot>selectBackgroundColour()</slot>
+  <slot>saveAs()</slot>
+  <slot>allInDirectory()</slot>
+  <slot>allFiles()</slot>
+ </slots>
 </ui>

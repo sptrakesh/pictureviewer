@@ -11,7 +11,6 @@ InfoViewer::InfoViewer( const QString& page, QWidget* parent ) :
   ui->setupUi( this );
 
   setAttribute( Qt::WA_DeleteOnClose );
-  setAttribute( Qt::WA_GroupLeader );
 
   ui->textBrowser->setSearchPaths( QStringList() << ":/images" << ":/docs" );
   ui->textBrowser->setSource( page );

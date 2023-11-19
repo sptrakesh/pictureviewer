@@ -142,4 +142,8 @@
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>allFiles()</slot>
+  <slot>inDirectory()</slot>
+ </slots>
 </ui>

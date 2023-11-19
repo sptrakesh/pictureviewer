@@ -1,7 +1,7 @@
 #include "ComicEngine.h"
-#include <QArchive.hpp>
 
 #include <QtCore/QDirIterator>
+#include <QtCore/QEventLoop>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMap>
 
@@ -23,8 +23,9 @@ ComicEngine::ComicEngine(const QDir& dir, const ComicBookSpec& spec,
 
 QString ComicEngine::create()
 {
-  using QArchive::Compressor;
+  using QArchive::DiskCompressor;
 
+  QEventLoop loop;
   QFileInfo fi{spec.outFile};
   auto suffix = fi.suffix();
   if ("rar" == suffix) suffix = "cbr";
@@ -32,15 +33,19 @@ QString ComicEngine::create()
   if ("zip" == suffix) suffix = "cbz";
   if ("7z" == suffix) suffix = "cb7";
 
-  auto c = Compressor{spec.outFile};
+  auto c = DiskCompressor{spec.outFile};
   c.addFiles(files);
 
-  c.setFunc(QArchive::COMPRESSED, [&](QString file) {
-    qInfo(COMIC_ENGINE) << "Compressed " << file;
+  connect(&c, &DiskCompressor::progress , [&](QString file, int processedEntries, int totalEntries, qint64, qint64 ) {
+      qInfo(COMIC_ENGINE) << "Compressed " << file <<
+          " (" << processedEntries << "/" << totalEntries << ").";
   });
 
+  connect(&c, &DiskCompressor::finished, &loop, &QEventLoop::quit);
+
   qInfo(COMIC_ENGINE) << "Creating comic book with " << suffix << " extension";
-  c.start().waitForFinished();
+  c.start();
+  loop.exec();
 
   const auto fileName = QString("%1/%2.%3").arg(fi.absolutePath()).arg(fi.completeBaseName()).arg(suffix);
   qInfo(COMIC_ENGINE()) << "Destination file " << fileName;

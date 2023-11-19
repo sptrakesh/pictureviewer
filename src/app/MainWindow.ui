@@ -124,7 +124,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -742,4 +742,27 @@
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>aboutQt()</slot>
+  <slot>openDirectory()</slot>
+  <slot>stopScanning()</slot>
+  <slot>play()</slot>
+  <slot>quit()</slot>
+  <slot>setInterval(int)</slot>
+  <slot>setIndex(int)</slot>
+  <slot>first()</slot>
+  <slot>next()</slot>
+  <slot>previous()</slot>
+  <slot>about()</slot>
+  <slot>displaySleep()</slot>
+  <slot>showFile()</slot>
+  <slot>removeFile()</slot>
+  <slot>viewExif()</slot>
+  <slot>newWindow()</slot>
+  <slot>watermark()</slot>
+  <slot>createPdf()</slot>
+  <slot>createComic()</slot>
+  <slot>viewLogs()</slot>
+  <slot>readComic()</slot>
+ </slots>
 </ui>

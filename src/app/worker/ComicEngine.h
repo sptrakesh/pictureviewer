@@ -2,7 +2,7 @@
 #define COMICENGINE_H
 
 #include "model/ComicBookSpec.h"
-#include <QArchive.hpp>
+#include <QArchive>
 
 #include <QtCore/QDir>
 #include <QtCore/QStringList>

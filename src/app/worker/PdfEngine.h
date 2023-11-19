@@ -1,6 +1,7 @@
 #ifndef PDFENGINE_H
 #define PDFENGINE_H
 
+#include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtGui/QPainter>
 

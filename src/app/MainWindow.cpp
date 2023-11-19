@@ -19,7 +19,6 @@
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QImageReader>
-#include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
@@ -159,7 +158,7 @@ void MainWindow::newWindow()
 {
   auto w = new MainWindow(this);
 
-  const auto desktop = qApp->desktop();
+  const auto desktop = qApp->primaryScreen();
   const auto dg = desktop->availableGeometry();
   const auto cwg = geometry();
   auto x = cwg.left();
