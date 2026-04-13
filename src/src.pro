@@ -22,8 +22,8 @@ RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.u
 
 macx {
-  CONFIG += c++20 sdk_no_version_check
-  QMAKE_CXXFLAGS = -std=c++20
+  CONFIG += c++23 sdk_no_version_check
+  QMAKE_CXXFLAGS = -std=c++23
   QMAKE_INFO_PLIST = ../resources/Info.plist
   ICON = ../resources/images/Icon.icns
   QMAKE_CFLAGS += -gdwarf-2

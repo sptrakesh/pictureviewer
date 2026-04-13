@@ -14,7 +14,7 @@ withCreateDmg()
 {
   if [ ! -d /tmp/create-dmg ]
   then
-    (cd /tmp; git clone https://github.com/andreyvit/create-dmg.git)
+    mkdir /tmp/create-dmg
   fi
 
   rm -rf /tmp/create-dmg/PictureViewer.app
@@ -22,7 +22,7 @@ withCreateDmg()
   \cp -Rp build/release/PictureViewer.app /tmp/create-dmg
   \cp resources/images/Icon.icns /tmp/create-dmg/icon.icns
   (cd /tmp/create-dmg;
-    ./create-dmg --window-size 500 300 --icon-size 96 \
+    create-dmg --window-size 500 300 --icon-size 96 \
       --volname "PictureViewer Installer" --app-drop-link 380 205 \
       'PictureViewer.dmg' 'PictureViewer.app')
 }
@@ -58,6 +58,6 @@ rm -rf build/release/PictureViewer.app
 $QTDIR/bin/qmake pictureviewer.pro -spec macx-clang CONFIG+=release CONFIG+=x86_64 \
   && make -j8 \
   && $QTDIR/bin/macdeployqt build/release/PictureViewer.app -appstore-compliant -fs=APFS -verbose=2 \
-  && withMakeDmg
+  && withCreateDmg
 
 rm -f Makefile
