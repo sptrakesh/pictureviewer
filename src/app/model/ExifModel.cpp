@@ -118,7 +118,7 @@ QVariant ExifModel::data(const QModelIndex& index, int role) const
       map.values().at(index.row());
   }
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
   if (Qt::BackgroundRole == role) return QColor(Qt::white);
   if (Qt::ForegroundRole == role) return QColor(Qt::black);
 #endif

@@ -98,7 +98,7 @@ void Watermark::saveAs()
     return;
   }
 
-  if (QFileInfo(fileName).exists())
+  if (QFileInfo::exists(fileName))
   {
     const auto result = QMessageBox::question(this,
         tr("Over-write file?"),
@@ -221,7 +221,7 @@ WatermarkSpecPtr Watermark::createSpec()
 
 void Watermark::setForeground()
 {
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
   QPalette palette;
   palette.setColor(QPalette::Text, Qt::black);
   ui->text->setPalette(palette);

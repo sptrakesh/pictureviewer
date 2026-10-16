@@ -48,6 +48,9 @@ win32 {
 }
 
 HEADERS  += \
+    log/day.hpp \
+    log/tee.hpp \
+    log/NanoLog.hpp \
     ext/exif.h \
     app/InfoViewer.h \
     app/MainWindow.h \
@@ -83,6 +86,7 @@ HEADERS  += \
 
 SOURCES += \
     main.cpp \
+    log/NanoLog.cpp \
     ext/exif.cpp \
     app/MainWindow.cpp \
     app/InfoViewer.cpp \

@@ -31,7 +31,7 @@ namespace com::sptci
 
   inline void showFile(const QString& filePath)
   {
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
     QStringList args;
     args << "-e";
     args << "tell application \"Finder\"";

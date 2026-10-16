@@ -9,6 +9,9 @@
 #include "ComicMaker.h"
 #include "ComicReader.h"
 #include "LogViewer.h"
+#ifdef __APPLE__
+#include "log/NanoLog.hpp"
+#endif
 
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
@@ -21,6 +24,7 @@
 #include <QtGui/QImageReader>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QStyleFactory>
 
 #include <algorithm>
 #include <iterator>
@@ -45,6 +49,9 @@ MainWindow::MainWindow(QWidget *parent) :
   qInfo(MAIN_WINDOW) << "Creating MainWindow with index: " << WINDOW_INDEX;
   ui->setupUi(this);
   ui->label->setBackgroundRole(QPalette::Base);
+
+  auto *fusion = QStyleFactory::create( "Fusion" );
+  ui->indexSlider->setStyle( fusion );
 
   createRecent();
   initInterval();
@@ -72,7 +79,7 @@ MainWindow::~MainWindow()
     thread->deleteLater();
   });
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
   if (index == 0 && QProcess::Running == caffeinate.state())
   {
     qInfo(MAIN_WINDOW) << "Killing caffeinate from MainWindow with index: " << WINDOW_INDEX;
@@ -216,7 +223,7 @@ void MainWindow::displaySleep()
 
   if (flag && index == 0)
   {
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
     if (QProcess::Running == caffeinate.state())
     {
       qDebug(MAIN_WINDOW()) << "Killing caffeinate process";
@@ -228,7 +235,7 @@ void MainWindow::displaySleep()
   }
   else if (index == 0)
   {
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
     qDebug(MAIN_WINDOW()) << "Starting caffeinate process";
     QStringList arguments;
     arguments << "-d";
@@ -487,7 +494,7 @@ bool MainWindow::sleepFlag()
 
 void MainWindow::initDisplaySleep()
 {
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   const bool flag = sleepFlag();
   qDebug(MAIN_WINDOW) << "Stored display sleep flag: " << flag;
   ui->actionDisplay_sleep->setChecked(flag);
@@ -606,6 +613,10 @@ void MainWindow::displayImage(const QString& file)
 
   const auto format = QImageReader::imageFormat(file);
   ui->actionView_Exif->setEnabled((format == "jpeg"));
+
+#if defined(Q_OS_MACOS)
+  LOG_INFO << files.currentIndex() + 1 << '/' << files.count() << ' ' << file.toStdString();
+#endif
 
   auto pixmap = QPixmap::fromImage(image);
   pixmap = pixmap.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);

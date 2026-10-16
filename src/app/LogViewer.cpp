@@ -25,7 +25,7 @@ LogViewer::~LogViewer()
 void LogViewer::refresh()
 {
   QFile file(com::sptci::logFile());
-  file.open(QIODevice::ReadOnly | QIODevice::Text);
+  [[maybe_unused]] auto ret = file.open(QIODevice::ReadOnly | QIODevice::Text);
   qDebug() << "Reading contents of log file " << file.fileName();
 
   QTextStream in(&file);
@@ -43,7 +43,7 @@ void LogViewer::refresh()
 
 QString LogViewer::addHtmlColor(const QString& text) const
 {
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
   QString color = "White";
 #else
   QString color = "Black";

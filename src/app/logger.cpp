@@ -13,7 +13,7 @@ namespace com::sptci
   {
     Logger() : outFile(logFile()), stream(&outFile)
     {
-      outFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+      [[maybe_unused]] auto ret = outFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
       fprintf(stdout, "Logging to file: %s\n", outFile.fileName().toLocal8Bit().constData());
     }
 

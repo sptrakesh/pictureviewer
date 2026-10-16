@@ -6,7 +6,7 @@
 #include <QtCore/QTimer>
 #include <QtWidgets/QMainWindow>
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
 #include <QtCore/QProcess>
 #endif
 
@@ -96,7 +96,7 @@ namespace com::sptci
     enum { MaxRecentFiles = 10 };
     QAction* recentFiles[MaxRecentFiles];
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
     QProcess caffeinate;
 #endif
     Ui::MainWindow* ui;

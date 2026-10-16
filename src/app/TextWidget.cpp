@@ -9,7 +9,7 @@ TextWidget::TextWidget(const QString& text, QWidget* parent) :
 {
   setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
   setAttribute(Qt::WA_NoSystemBackground);
   setAttribute(Qt::WA_TranslucentBackground);
   setAttribute(Qt::WA_TransparentForMouseEvents);
